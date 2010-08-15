@@ -1,4 +1,9 @@
 2010-08-15  Dirk Eddelbuettel  <edd@debian.org>
 
+	* R/benchmark.R: Added svdBenchmark and GPU variant
+	* man/benchmark.Rd: Added documentation
+	
+	* inst/sql/: renamed from inst/data
+
 	* Release 0.1.0 and initial committ
 

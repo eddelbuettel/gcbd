@@ -5,6 +5,8 @@
 \alias{multBenchmarkgputools}
 \alias{qrBenchmark}
 \alias{qrBenchmarkgputools}
+\alias{svdBenchmark}
+\alias{svdBenchmarkgputools}
 \title{Benchmarking functions for GPU/CPU Benchmarking}
 \description{
   Benchmarking functions for GPU/CPU Benchmarking
@@ -15,6 +17,8 @@
   multBenchmarkgputools(N, n, trim=0.1)
   qrBenchmark(N, n, trim=0.1)
   qrBenchmarkgputools(N, n, trim=0.1)
+  svdBenchmark(N, n, trim=0.1)
+  svdBenchmarkgputools(N, n, trim=0.1)
 }
 \arguments{
   \item{N}{dimension of square matrix}
@@ -29,9 +33,14 @@
   mean of the elapsed times. \code{multBenchmarkgputools} does the using
   the \strong{gputools} package.
 
-  \code{qrBenchmark} times the cost of a QR decomposition of a matrix of the 
-  given size, repeated as specified and returns the trimmed
-  mean of the elapsed times. \code{qrBenchmarkgputools} does the using
-  the \strong{gputools} package.
-}
+  \code{qrBenchmark} times the cost of a QR decomposition of a matrix of
+  the given size, repeated as specified and returns the trimmed mean of
+  the elapsed times. \code{qrBenchmarkgputools} does the using the
+  \strong{gputools} package.
+
+  \code{svdBenchmark} times the cost of a SVD decomposition of a matrix
+  of the given size, repeated as specified and returns the trimmed mean
+  of the elapsed times. \code{svdBenchmarkgputools} does the using the
+  \strong{gputools} package.  }
+
 \keyword{misc}

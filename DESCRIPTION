@@ -1,0 +1,32 @@
+Package: gcbd
+Type: Package
+Title: GPU/CPU Benchmarking in .deb-based systems
+Version: 0.1.0
+Date: $Date$
+Author: Dirk Eddelbuettel
+Maintainer: Dirk Eddelbuettel <edd@debian.org>
+Description: GPU/CPU Benchmarking for .deb-based system
+ This package benchmarks performance of a few standard linear algebra
+ operations (such as a matrix product) across a number of different
+ BLAS applications as well as available GPU implementations.
+ .
+ To do so, it takes advantage of the ability to 'plug and play' different
+ BLAS implementations easily on a Debian and/or Ubuntu system.  The current
+ version supports
+  - reference blas (refblas) which are unaccelerated as a baseline
+  - Atlas which are tuned but typically configure single-threaded
+  - Goto Blas which are accelerated and multithreaded
+  - Intel MKL which are a commercial accelerated and multithreaded version.
+ As for GPU computing, we the CRAN packages
+  - gputools
+  - magma
+ .
+ For Goto Blas, the gotoblas2-helper script from the ISM in Tokyo can be
+ used. For Intel MKL we use the Revolution R packages from Ubuntu 9.10.
+License: GPL (>= 2)
+LazyLoad: yes
+Depends: R (>= 2.10.0), RSQLite, gputools
+Suggests: magma
+SystemRequirements: Debian or Ubuntu system with access to Goto Blas and
+ Intel MKL as well as Nvidia GPU with CUDA support
+OS_type: unix

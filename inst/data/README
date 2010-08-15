@@ -1,0 +1,7 @@
+
+The SQLite database in this directory is 'read-only' and meant to provide the
+reference result.
+
+The package is set up to create a local file into which results are written.
+Users are encouraged to submit their results to the package maintainer so
+that more data can be accumulated.

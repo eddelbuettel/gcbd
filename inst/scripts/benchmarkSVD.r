@@ -20,7 +20,7 @@ options <- matrix(c('verbose', 'v', 2, "integer", paste("verbose operations, def
 opt <- getopt(options, opt=argv)
 
 if (!is.null(opt$help)) {
-    cat(getopt(options, opt=argv, command="benchmarkQR.r", usage=TRUE))
+    cat(getopt(options, opt=argv, command="benchmarkSVD.r", usage=TRUE))
     q(status=100)
 }
 
@@ -34,9 +34,9 @@ purgeAtlas()
 purgeMKL()
 purgeGoto()
 
-cmd      <- paste('r -lgcbd       -e"cat(qrBenchmark(', N, ",", n, '))"', sep="")
-cmdmagma <- paste('r -lgcbd,magma -e"cat(qrBenchmark(', N, ",", n, '))"', sep="")
-cmdgpu   <- paste('r -lgcbd       -e"cat(qrBenchmarkgputools(', N, ",", n, '))"', sep="")
+cmd      <- paste('r -lgcbd       -e"cat(svdBenchmark(', N, ",", n, '))"', sep="")
+cmdmagma <- paste('r -lgcbd,magma -e"cat(svdBenchmark(', N, ",", n, '))"', sep="")
+cmdgpu   <- paste('r -lgcbd       -e"cat(svdBenchmarkgputools(', N, ",", n, '))"', sep="")
 
 ref <- as.numeric(system(cmd, intern=TRUE))
 
@@ -57,7 +57,7 @@ purgeGoto()
 
 gpu <- as.numeric(system(cmdgpu, intern=TRUE))
 
-res <- data.frame(type="qr", nobs=N, nrun=n,
+res <- data.frame(type="svd", nobs=N, nrun=n,
                   ref=ref,
                   atlas=atlas, magmaAtlas=magmaAtlas,
                   mkl=mkl, magmaMkl=magmaMkl,

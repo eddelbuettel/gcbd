@@ -1,0 +1,134 @@
+
+%% use JSS class but for now with nojss option
+\documentclass[nojss,article]{jss}
+
+
+<<echo=FALSE,print=FALSE>>=
+options(width=50)
+library(gcbd)
+gcbd.version <- packageDescription("gcbd")$Version
+gcbd.date <- packageDescription("gcbd")$Date
+@
+% closing $ needed here
+
+
+\author{Dirk Eddelbuettel\\Debian Project} % \And Second Author\\Plus Affiliation}
+\title{Benchmarking single- and multi-core BLAS implementations and GPUs for
+  use with \proglang{R}}
+
+%% for pretty printing and a nice hypersummary also set:
+\Plainauthor{Dirk Eddelbuettel} % , Second Author} %% comma-separated
+\Plaintitle{Benchmarking Single- and Multi-Core BLAS Implementaions and GPUs for Use with R} %% without formatting
+\Shorttitle{Benchmarking BLAS and GPUs for Use with R} %% a short title (if necessary)
+
+%% an abstract and keywords
+\Abstract{
+  \noindent
+  We provide timings for common linear algebra subroutines as well as
+  GPUs. Several BLAS (Basic Linear Algrebra Subprograms) are compared. The
+  first is the unoptimised reference BLAS which provides a baseline to
+  measure against. Second is the Atlas tuned BLAS, configured for
+  single-threadede mode. Third is the optimised and multithreaded Goto
+  BLAS. Fourth is the BLAS contained in the commercial Intel MKL package. We
+  also use two GPU-based implementations: \pkg{gputools} as well as
+  \pkg{magma}.
+
+  Several key computations are compared: matrix multiplication, QR
+  decomposition and SVD decomposition.
+
+  This paper corresponds to gcbd version \Sexpr{gcbd.version} dated \Sexpr{gcbd.date}.
+}
+\Keywords{blas, atlas, goto, mkl, gpu}
+\Plainkeywords{blas, atlas, goto, mkl, gpu} %% without formatting
+%% at least one keyword must be supplied
+
+%% publication information
+%% NOTE: Typically, this can be left commented and will be filled out by the technical editor
+%% \Volume{13}
+%% \Issue{9}
+%% \Month{September}
+%% \Year{2004}
+%% \Submitdate{2004-09-29}
+%% \Acceptdate{2004-09-29}
+
+%% The address of (at least) one author should be given
+%% in the following format:
+\Address{
+  Dirk Eddelbuettel \\
+  Debian Project \\
+  River Forest, IL, USA\\
+  E-mail: \email{edd@debian.org}\\
+  URL: \url{http://dirk.eddelbuettel.com}
+}
+%% It is also possible to add a telephone and fax number
+%% before the e-mail in the following format:
+%% Telephone: +43/1/31336-5053
+%% Fax: +43/1/31336-734
+
+%% for those who use Sweave please include the following line (with % symbols):
+%% need no \usepackage{Sweave.sty}
+
+%% end of declarations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+%% include your article here, just as usual
+%% Note that you should use the \pkg{}, \proglang{} and \code{} commands.
+
+\section[Introduction]{Introduction}
+
+Analysts are always to eager to reap the maximum performance from their
+computing platform.  A popular suggestion in recent years has been to
+consider \textsl{optimised} (in a sense we will define further below) basic
+linear algebra subprograms (BLAS).  These are included with some analysis
+platforms, or readily available for others.
+
+\section[Test Implementation]{Test Implementation}
+
+\section[Results]{Results}
+
+<<echo=FALSE,print=FALSE>>=
+dbcon <- dbConnect(dbDriver("SQLite"), dbname="../sql/gcbd.sqlite")
+data <- dbReadTable(dbcon, "benchmark", row.names=0, stringsAsFactor=FALSE)
+invisible(dbDisconnect(dbcon))
+@
+
+
+<<echo=FALSE,fig=TRUE>>=
+D <- subset(data[,-c(1:2,5)], type=='matmult')
+with(D, plot(nobs, ref, type='l', col=1))
+with(D, lines(nobs, atlas, col=2))
+with(D, lines(nobs, mkl, col=3))
+with(D, lines(nobs, gotob, col=4))
+with(D, lines(nobs, gpu, col=5))
+# [1] "type"       "nobs"       "ref"        "atlas"      "magmaAtlas"
+# [6] "mkl"        "magmaMkl"   "gotob"      "magmaGoto"  "gpu"
+@
+
+<<echo=FALSE,fig=TRUE>>=
+D <- subset(data[,-c(1:2,5)], type=='qr')
+with(D, plot(nobs, ref, type='l', col=1))
+with(D, lines(nobs, atlas, col=2))
+with(D, lines(nobs, mkl, col=3))
+with(D, lines(nobs, gotob, col=4))
+with(D, lines(nobs, gpu, col=5))
+# [1] "type"       "nobs"       "ref"        "atlas"      "magmaAtlas"
+# [6] "mkl"        "magmaMkl"   "gotob"      "magmaGoto"  "gpu"
+@
+
+<<echo=FALSE,fig=TRUE>>=
+D <- subset(data[,-c(1:2,5)], type=='svd')
+with(D, plot(nobs, ref, type='l', col=1))
+with(D, lines(nobs, atlas, col=2))
+with(D, lines(nobs, mkl, col=3))
+with(D, lines(nobs, gotob, col=4))
+with(D, lines(nobs, gpu, col=5))
+# [1] "type"       "nobs"       "ref"        "atlas"      "magmaAtlas"
+# [6] "mkl"        "magmaMkl"   "gotob"      "magmaGoto"  "gpu"
+@
+
+
+\section[Summary]{Summary}
+
+\end{document}

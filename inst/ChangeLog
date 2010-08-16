@@ -2,7 +2,9 @@
 
 	* R/benchmark.R: Added svdBenchmark and GPU variant
 	* man/benchmark.Rd: Added documentation
-	
+
+	* inst/doc/vignette.Rnw: beginnings of a vignette
+
 	* inst/sql/: renamed from inst/data
 
 	* Release 0.1.0 and initial committ

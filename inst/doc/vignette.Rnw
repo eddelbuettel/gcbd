@@ -92,40 +92,45 @@ platforms, or readily available for others.
 dbcon <- dbConnect(dbDriver("SQLite"), dbname="../sql/gcbd.sqlite")
 data <- dbReadTable(dbcon, "benchmark", row.names=0, stringsAsFactor=FALSE)
 invisible(dbDisconnect(dbcon))
+D <- subset(data[,-c(1:2,5)], type=="matmult")
+D <- D[order(D[,"nobs"]),]
 @
 
 
 <<echo=FALSE,fig=TRUE>>=
 D <- subset(data[,-c(1:2,5)], type=='matmult')
-with(D, plot(nobs, ref, type='l', col=1))
-with(D, lines(nobs, atlas, col=2))
-with(D, lines(nobs, mkl, col=3))
-with(D, lines(nobs, gotob, col=4))
-with(D, lines(nobs, gpu, col=5))
-# [1] "type"       "nobs"       "ref"        "atlas"      "magmaAtlas"
-# [6] "mkl"        "magmaMkl"   "gotob"      "magmaGoto"  "gpu"
+D <- D[order(D[,"nobs"]),]
+matplot(x=D[,"nobs"], y=D[,c(3:10)], type='l', lty=1, xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication")
+@
+
+<<echo=FALSE,fig=TRUE>>=
+D <- subset(data[,-c(1:2,5)], type=='matmult')
+D <- D[order(D[,"nobs"]),]
+matplot(x=D[,"nobs"], y=D[,c(3:10)], type='l', lty=1, xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="Matrix Multiplication", log="y")
 @
 
 <<echo=FALSE,fig=TRUE>>=
 D <- subset(data[,-c(1:2,5)], type=='qr')
-with(D, plot(nobs, ref, type='l', col=1))
-with(D, lines(nobs, atlas, col=2))
-with(D, lines(nobs, mkl, col=3))
-with(D, lines(nobs, gotob, col=4))
-with(D, lines(nobs, gpu, col=5))
-# [1] "type"       "nobs"       "ref"        "atlas"      "magmaAtlas"
-# [6] "mkl"        "magmaMkl"   "gotob"      "magmaGoto"  "gpu"
+D <- D[order(D[,"nobs"]),]
+matplot(x=D[,"nobs"], y=D[,c(3:10)], type='l', lty=1, xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition")
+@
+
+<<echo=FALSE,fig=TRUE>>=
+D <- subset(data[,-c(1:2,5)], type=='qr')
+D <- D[order(D[,"nobs"]),]
+matplot(x=D[,"nobs"], y=D[,c(3:10)], type='l', lty=1, xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="QR Decomposition", log="y")
 @
 
 <<echo=FALSE,fig=TRUE>>=
 D <- subset(data[,-c(1:2,5)], type=='svd')
-with(D, plot(nobs, ref, type='l', col=1))
-with(D, lines(nobs, atlas, col=2))
-with(D, lines(nobs, mkl, col=3))
-with(D, lines(nobs, gotob, col=4))
-with(D, lines(nobs, gpu, col=5))
-# [1] "type"       "nobs"       "ref"        "atlas"      "magmaAtlas"
-# [6] "mkl"        "magmaMkl"   "gotob"      "magmaGoto"  "gpu"
+D <- D[order(D[,"nobs"]),]
+matplot(x=D[,"nobs"], y=D[,c(3:10)], type='l', lty=1, xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition")
+@
+
+<<echo=FALSE,fig=TRUE>>=
+D <- subset(data[,-c(1:2,5)], type=='svd')
+D <- D[order(D[,"nobs"]),]
+matplot(x=D[,"nobs"], y=D[,c(3:10)], type='l', lty=1, xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="SVD Decomposition", log="y")
 @
 
 

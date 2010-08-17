@@ -89,7 +89,7 @@ platforms, or readily available for others.
 \section[Results]{Results}
 
 <<echo=FALSE,print=FALSE>>=
-dbcon <- dbConnect(dbDriver("SQLite"), dbname="../sql/gcbd.sqlite")
+dbcon <- dbConnect(dbDriver("SQLite"), dbname=system.file("sql", "gcbd.sqlite", package="gcbd"))
 data <- dbReadTable(dbcon, "benchmark", row.names=0, stringsAsFactor=FALSE)
 invisible(dbDisconnect(dbcon))
 D <- subset(data[,-c(1:2,5)], type=="matmult")

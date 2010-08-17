@@ -1,5 +1,6 @@
 
 .dbfile <- "/var/tmp/gcbd.sqlite"
+.packages <- as.character(installed.packages()[,1])
 
 requirements <- function() {
 
@@ -31,33 +32,33 @@ requirements <- function() {
 }
 
 installAtlas <- function() {
-    res <- system("wajig -y install libatlas-base-dev libatlas3gf-base", intern=TRUE, ignore.stderr=TRUE)
+    res <- system("sudo apt-get -y --force-yes install libatlas3gf-base", intern=TRUE, ignore.stderr=TRUE)
     invisible(res)
 }
 
 purgeAtlas <- function() {
     ##-- old local build wajig purge libatlas-base-dev libatlas-dev  libatlas3gf-amd64sse3  libatlas3gf-base
-    res <- system("wajig -y purge libatlas-base-dev libatlas3gf-base", intern=TRUE, ignore.stderr=TRUE)
+    res <- system("sudo apt-get -y --force-yes purge libatlas3gf-base", intern=TRUE, ignore.stderr=TRUE)
     invisible(res)
 }
 
 installMKL <- function() {
-    res <- system("wajig -y install revolution-mkl r-revolution-revobase revolution-r", intern=TRUE, ignore.stderr=TRUE)
+    res <- system("sudo apt-get -y --force-yes install revolution-mkl r-revolution-revobase revolution-r", intern=TRUE, ignore.stderr=TRUE)
     invisible(res)
 }
 
 purgeMKL <- function() {
-    res <- system("wajig -y purge revolution-mkl r-revolution-revobase revolution-r", intern=TRUE, ignore.stderr=TRUE)
+    res <- system("sudo apt-get -y --force-yes purge revolution-mkl r-revolution-revobase revolution-r", intern=TRUE, ignore.stderr=TRUE)
     invisible(res)
 }
 
 installGoto <- function() {
-    res <- system("wajig -y install /var/spool/gotoblas2-helper/archive/gotoblas2_1.13-1_amd64.deb", intern=TRUE, ignore.stderr=TRUE)
+    res <- system("sudo apt-get -y --force-yes install /var/spool/gotoblas2-helper/archive/gotoblas2_1.13-1_amd64.deb", intern=TRUE, ignore.stderr=TRUE)
     invisible(res)
 }
 
 purgeGoto <- function() {
-    res <- system("wajig -y purge gotoblas2", intern=TRUE, ignore.stderr=TRUE)
+    res <- system("sudo apt-get -y --force-yes purge gotoblas2", intern=TRUE, ignore.stderr=TRUE)
     invisible(res)
 }
 
@@ -93,4 +94,12 @@ databaseResult <- function(data,dbfile=.dbfile) {
     res <- dbWriteTable(dbcon, "benchmark", newdf, row.names=FALSE, overwrite=FALSE, append=TRUE)
     dbDisconnect(dbcon)
 
+}
+
+hasMagma <- function() {
+    any( "magma" == .packages() )
+}
+
+hasGputools <- function() {
+    any( "goutools" == .packages() )
 }

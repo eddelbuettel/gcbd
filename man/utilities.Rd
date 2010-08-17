@@ -9,6 +9,8 @@
 \alias{purgeAtlas}
 \alias{purgeGoto}
 \alias{purgeMKL}
+\alias{hasGputools}
+\alias{hasMagma}
 \title{Utility functions for GPU/CPU Benchmarking}
 \description{
   Utility functions for GPU/CPU Benchmarking
@@ -25,6 +27,9 @@
   purgeAtlas()
   purgeGoto()
   purgeMKL()
+
+  hasGputools()
+  hasMagma()
 }
 \arguments{
   \item{data}{a (one-row) dataframe containing results from a benchmark}
@@ -43,6 +48,10 @@
 
   The different \code{install*} functions add the respective BLAS
   libraries to the system; the different \code{purge*} functions do the
-  inverse operation and remove them.  
+  inverse operation and remove them.
+
+  The functions \code{hasGputools} and \code{hasMagma} test for presence
+  of these CRAN package on the current machines -- as a very cheap proxy
+  to testing whether the machine in GPU-capable or not.
 }  
 \keyword{misc}

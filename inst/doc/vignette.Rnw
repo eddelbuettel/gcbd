@@ -1,20 +1,23 @@
 
 %% use JSS class but for now with nojss option
 \documentclass[nojss,article]{jss}
-
+\usepackage{float}
 
 <<echo=FALSE,print=FALSE>>=
 options(width=50)
 library(gcbd)
 gcbd.version <- packageDescription("gcbd")$Version
 gcbd.date <- packageDescription("gcbd")$Date
+# dput(brewer.pal(5, "Set1"))
+cols <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00")
+# dput(brewer.pal(8,"Paired"))
+paircols <- c("#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C", "#FB9A99", "#E31A1C", "#FDBF6F", "#FF7F00")
 @
 % closing $ needed here
 
 
 \author{Dirk Eddelbuettel\\Debian Project} % \And Second Author\\Plus Affiliation}
-\title{Benchmarking single- and multi-core BLAS implementations and GPUs for
-  use with \proglang{R}}
+\title{Benchmarking single- and multi-core BLAS implementations and GPUs for use with \proglang{R}}
 
 %% for pretty printing and a nice hypersummary also set:
 \Plainauthor{Dirk Eddelbuettel} % , Second Author} %% comma-separated
@@ -24,19 +27,18 @@ gcbd.date <- packageDescription("gcbd")$Date
 %% an abstract and keywords
 \Abstract{
   \noindent
-  We provide timings for common linear algebra subroutines as well as
-  GPUs. Several BLAS (Basic Linear Algrebra Subprograms) are compared. The
-  first is the unoptimised reference BLAS which provides a baseline to
-  measure against. Second is the Atlas tuned BLAS, configured for
-  single-threadede mode. Third is the optimised and multithreaded Goto
-  BLAS. Fourth is the BLAS contained in the commercial Intel MKL package. We
-  also use two GPU-based implementations: \pkg{gputools} as well as
-  \pkg{magma}.
+  We provide timings for common linear algebra subroutines. Several BLAS
+  (Basic Linear Algrebra Subprograms) are compared. The first is the
+  unoptimised reference BLAS which provides a baseline to measure
+  against. Second is the Atlas tuned BLAS, configured for single-threaded
+  mode. Third is the optimised and multi-threaded Goto BLAS. Fourth is the
+  multithreaded-BLAS contained in the commercial Intel MKL package. We also use two
+  GPU-based implementations: \pkg{gputools} as well as \pkg{magma}.
 
   Several key computations are compared: matrix multiplication, QR
   decomposition and SVD decomposition.
 
-  This paper corresponds to gcbd version \Sexpr{gcbd.version} dated \Sexpr{gcbd.date}.
+%  This paper corresponds to gcbd version \Sexpr{gcbd.version}.
 }
 \Keywords{blas, atlas, goto, mkl, gpu}
 \Plainkeywords{blas, atlas, goto, mkl, gpu} %% without formatting
@@ -72,23 +74,83 @@ gcbd.date <- packageDescription("gcbd")$Date
 
 
 \begin{document}
+\SweaveOpts{engine=R,eps=FALSE,echo=FALSE}
 
 %% include your article here, just as usual
 %% Note that you should use the \pkg{}, \proglang{} and \code{} commands.
 
 \section[Introduction]{Introduction}
 
-Analysts are always to eager to reap the maximum performance from their
+Analysts are often eager to reap the maximum performance from their
 computing platform.  A popular suggestion in recent years has been to
 consider \textsl{optimised} (in a sense we will define further below) basic
 linear algebra subprograms (BLAS).  These are included with some analysis
-platforms, or readily available for others.
+platforms, or readily available for others. [TODO R Inst Admin reference]
 
-\section[Test Implementation]{Test Implementation}
+Among the BLAS implementation, several popular choices have emerged. Atlas
+(an acronym for \textsl{automatically tuned linear algebra system} is popular
+as it has shown good performance. It is also licensed in such a way that it
+permits distributors to include it in their products.  Another popular BLAS
+implementation is Goto BLAS (which is named after its main developer, Kazushige
+Goto). While `free to use', its license does not permit redistribution.
+Lastly, the Intel MKL, a commercial product, also includes an optimised BLAS
+library.
+
+A recent addition to the toolchain of high-performance computing are
+graphical processing units (GPUs).  Originally designed for optmised
+single-precision arithmetic to accelerate computing as performed by graphics
+cards, these devices are increasingly used in numerical analysis.  Earlier
+criticism of insufficient floating-point precisions (IEEE standard; reference
+?) or severe performance penalties for double-precision calculation are being
+addressed by the newest models. Dependence on particular vendors remains a
+concern which NVidia's CUDA toolkit currently still the development choice
+where the newer OpenCL standard may become a more generic successor.
+
+\section[Test Implementation]{Background and Implementation}
+
+\subsection{Background}
+
+Basic Linear Algrebra Subprograms (BLAS) provide an Application Programming
+Interface (API).  For a givem task as, say, a multiplication of two
+conformant matrices, an interface is described via a function
+declaration. The actual implementation then becomes interchangeable and can
+be supplied by different approaches.  This is one of the fundamental code
+design features we are using here to benchmark the difference in performance
+from different implementations.
+
+A second key aspect is the difference between static and shared linking.  In
+static linking, object code is copied from the uderlying library and copied
+into the resulting executable.  This has several key implications. First, it
+the executable larger due to the copy of code. Second, it makes it marginally
+faster as the library code is present and additional lookup and subsequent
+redirect has to be performed (and the amount of this performance penalty is
+the subject of near endless debate). Third, it make the program more robust
+as fewer external dependencies are required.  However, this last point also
+has a downside: no changes in the underlying library will be reflected in the
+binary unless a new build is executed.  Shared library builds, on the other
+hand, result in smaller binaries that may run marginally slower -- but can
+make use of different libraries without a rebuild.  That last feature is key
+here.
+
+
+Describe gotoblas2-helper
+
+Describe Revolution R and MKL
+
+Describe Debian install / purge of packages
+
+Describe gputools
+
+Describe magma
+
+Mention R has to be built with shared lib and external blas to allow
+switching as we do here
+
+Mention hardware impact, show baseline results on different platforms?
 
 \section[Results]{Results}
 
-<<echo=FALSE,print=FALSE>>=
+<<print=FALSE>>=
 dbcon <- dbConnect(dbDriver("SQLite"), dbname=system.file("sql", "gcbd.sqlite", package="gcbd"))
 data <- dbReadTable(dbcon, "benchmark", row.names=0, stringsAsFactor=FALSE)
 invisible(dbDisconnect(dbcon))
@@ -96,42 +158,113 @@ D <- subset(data[,-c(1:2,5)], type=="matmult")
 D <- D[order(D[,"nobs"]),]
 @
 
+\subsection{BLAS Comparison}
 
-<<echo=FALSE,fig=TRUE>>=
+\subsubsection{Matrix Multiplication}
+
+\setkeys{Gin}{width=0.99\textwidth}
+\begin{figure}[H]
+  \centering
+<<fig=TRUE,height=6,width=12>>=
 D <- subset(data[,-c(1:2,5)], type=='matmult')
 D <- D[order(D[,"nobs"]),]
-matplot(x=D[,"nobs"], y=D[,c(3:10)], type='l', lty=1, xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication")
+op <- par(mfrow=c(1,2))
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob","gpu")], type='l', lty=1, col=cols,
+        xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication")
+legend("topleft", legend=c("Ref","Atlas","MKL","Goto","GPU"), bty="n", col=cols, lty=1)
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob","gpu")], type='l', lty=1, col=cols,
+        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="Matrix Multiplication", log="y")
+legend("bottomright", legend=c("Ref","Atlas","MKL","Goto","GPU"), bty="n", col=cols, lty=1)
+par(op)
 @
+\end{figure}
 
-<<echo=FALSE,fig=TRUE>>=
+\subsubsection{QR Decomposition}
+
+\begin{figure}[H]
+  \centering
+<<fig=TRUE,height=6,width=12>>=
+D <- subset(data[,-c(1:2,5)], type=='qr')
+D <- D[order(D[,"nobs"]),]
+op <- par(mfrow=c(1,2))
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob","gpu")], type='l', lty=1, col=cols,
+        xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition")
+legend("topleft", legend=c("Ref","Atlas","MKL","Goto","GPU"), bty="n", col=cols, lty=1)
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob","gpu")], type='l', lty=1, col=cols, log="y",
+        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="QR Decomposition")
+legend("bottomright", legend=c("Ref","Atlas","MKL","Goto","GPU"), bty="n", col=cols, lty=1)
+par(op)
+@
+\end{figure}
+
+\subsubsection{SVD Decomposition}
+
+\begin{figure}[H]
+  \centering
+<<fig=TRUE,height=6,width=12>>=
+D <- subset(data[,-c(1:2,5)], type=='svd')
+D <- D[order(D[,"nobs"]),]
+op <- par(mfrow=c(1,2))
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob","gpu")], type='l', lty=1, col=cols,
+        xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition")
+legend("topleft", legend=c("Ref","Atlas","MKL","Goto","GPU"), bty="n", col=cols, lty=1)
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob","gpu")], type='l', lty=1, col=cols, log="y",
+        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="SVD Decomposition")
+legend("bottomright", legend=c("Ref","Atlas","MKL","Goto","GPU"), bty="n", col=cols, lty=1)
+par(op)
+@
+\end{figure}
+
+
+
+\subsection{Magma: GPU and BLAS combined}
+
+\begin{figure}[H]
+  \centering
+<<fig=TRUE,height=6,width=12>>=
 D <- subset(data[,-c(1:2,5)], type=='matmult')
 D <- D[order(D[,"nobs"]),]
-matplot(x=D[,"nobs"], y=D[,c(3:10)], type='l', lty=1, xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="Matrix Multiplication", log="y")
+op <- par(mfrow=c(1,2))
+matplot(x=D[,"nobs"], y=D[,c("atlas","magmaAtlas","gotob","magmaGoto", "mkl", "magmaMkl")],
+        type='l', lty=1, col=paircols,
+        xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication")
+legend("topleft", legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
+       bty="n", col=paircols, lty=1)
+matplot(x=D[,"nobs"], y=D[,c("atlas","magmaAtlas","gotob","magmaGoto", "mkl", "magmaMkl")],
+        type='l', lty=1, col=paircols, log="y",
+        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="Matrix Multiplication")
+legend("bottomright",
+       legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
+       bty="n", col=paircols, lty=1)
+par(op)
 @
+\end{figure}
 
-<<echo=FALSE,fig=TRUE>>=
-D <- subset(data[,-c(1:2,5)], type=='qr')
-D <- D[order(D[,"nobs"]),]
-matplot(x=D[,"nobs"], y=D[,c(3:10)], type='l', lty=1, xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition")
-@
 
-<<echo=FALSE,fig=TRUE>>=
-D <- subset(data[,-c(1:2,5)], type=='qr')
+\begin{figure}[H]
+  \centering
+<<fig=TRUE,height=6,width=6>>=
+D <- subset(data[,-c(1:2,5)], type=='matmult')
 D <- D[order(D[,"nobs"]),]
-matplot(x=D[,"nobs"], y=D[,c(3:10)], type='l', lty=1, xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="QR Decomposition", log="y")
-@
 
-<<echo=FALSE,fig=TRUE>>=
-D <- subset(data[,-c(1:2,5)], type=='svd')
-D <- D[order(D[,"nobs"]),]
-matplot(x=D[,"nobs"], y=D[,c(3:10)], type='l', lty=1, xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition")
-@
+N <- cbind(D[,"nobs"],
+           D[,"ref"]/D[,"atlas"],
+           D[,"ref"]/D[,"magmaAtlas"],
+           D[,"ref"]/D[,"gotob"],
+           D[,"ref"]/D[,"magmaGoto"],
+           D[,"ref"]/D[,"mkl"],
+           D[,"ref"]/D[,"magmaMkl"],
+           D[,"ref"]/D[,"gpu"])
 
-<<echo=FALSE,fig=TRUE>>=
-D <- subset(data[,-c(1:2,5)], type=='svd')
-D <- D[order(D[,"nobs"]),]
-matplot(x=D[,"nobs"], y=D[,c(3:10)], type='l', lty=1, xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="SVD Decomposition", log="y")
+matplot(x=D[,"nobs"], y=N[,-1],
+        type='l', lty=1, col=paircols, #pch=".",
+        xlab="Matrix dimension", ylab="Time in seconds",
+        main="Matrix Multiplication:\nRatio of Reference BLAS to given BLAS")
+legend("bottomright",
+       legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma", "GPU"),
+       bty="n", col=paircols, lty=1)
 @
+\end{figure}
 
 
 \section[Summary]{Summary}

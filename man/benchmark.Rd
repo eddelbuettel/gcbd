@@ -1,8 +1,8 @@
 \name{benchmark}
 \alias{benchmark}
 \alias{getMatrix}
-\alias{multBenchmark}
-\alias{multBenchmarkgputools}
+\alias{matmultBenchmark}
+\alias{matmultBenchmarkgputools}
 \alias{qrBenchmark}
 \alias{qrBenchmarkgputools}
 \alias{svdBenchmark}
@@ -13,8 +13,8 @@
 }
 \usage{
   getMatrix(N)
-  multBenchmark(N, n, trim=0.1)
-  multBenchmarkgputools(N, n, trim=0.1)
+  matmultBenchmark(N, n, trim=0.1)
+  matmultBenchmarkgputools(N, n, trim=0.1)
   qrBenchmark(N, n, trim=0.1)
   qrBenchmarkgputools(N, n, trim=0.1)
   svdBenchmark(N, n, trim=0.1)
@@ -28,9 +28,9 @@
 \details{
   \code{getMatrix} provides a square matrix of the given dimension.
 
-  \code{multBenchmark} times the cost of multiplying a matrix of the 
+  \code{matmultBenchmark} times the cost of multiplying a matrix of the 
   given size with itself, repeated as specified and returns the trimmed
-  mean of the elapsed times. \code{multBenchmarkgputools} does the using
+  mean of the elapsed times. \code{matmultBenchmarkgputools} does the using
   the \strong{gputools} package.
 
   \code{qrBenchmark} times the cost of a QR decomposition of a matrix of

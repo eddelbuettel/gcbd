@@ -6,13 +6,13 @@ getMatrix <- function(N) {
     invisible(a)
 }
 
-multBenchmark <- function(N, n, trim=0.1) {
+matmultBenchmark <- function(N, n, trim=0.1) {
     a <- getMatrix(N)
     traw <- replicate(n, system.time(crossprod(a))["elapsed"])
     tmean <- mean(traw,trim=trim)
 }
 
-multBenchmarkgputools <- function(N, n, trim=0.1) {
+matmultBenchmarkgputools <- function(N, n, trim=0.1) {
     a <- getMatrix(N)
     traw <- replicate(n, system.time(gpuMatMult(a,a))["elapsed"])
     tmean <- mean(traw,trim=trim)

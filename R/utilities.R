@@ -53,7 +53,7 @@ purgeMKL <- function() {
 }
 
 installGoto <- function() {
-    res <- system("sudo apt-get -y --force-yes install /var/spool/gotoblas2-helper/archive/gotoblas2_1.13-1_amd64.deb", intern=TRUE, ignore.stderr=TRUE)
+    res <- system("sudo wajig -y install /var/spool/gotoblas2-helper/archive/gotoblas2_1.13-1_amd64.deb", intern=TRUE, ignore.stderr=TRUE)
     invisible(res)
 }
 

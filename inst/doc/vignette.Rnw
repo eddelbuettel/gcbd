@@ -19,8 +19,8 @@ paircols <- c("#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C", "#FB9A99", "#E31A1C", 
 
 %% for pretty printing and a nice hypersummary also set:
 \Plainauthor{Dirk Eddelbuettel} % , Second Author} %% comma-separated
-\Plaintitle{Benchmarking Single- and Multi-Core BLAS Implementaions and GPUs for Use with R} %% without formatting
-\Shorttitle{Benchmarking BLAS and GPUs for Use with R} %% a short title (if necessary)
+\Plaintitle{Benchmarking Single- and Multi-Core BLAS Implementaions and GPUs for Use with R}
+\Shorttitle{Benchmarking BLAS and GPUs for Use with R}
 
 %% an abstract and keywords
 \Abstract{
@@ -89,7 +89,7 @@ consider \textsl{optimised} (in a sense we will define further below) basic
 linear algebra subprograms (BLAS).  These are included with some analysis
 platforms, or readily available for others. [TODO R Inst Admin reference]
 
-Among the BLAS implementation, several popular choices have emerged. Atlas
+Among the BLAS implementations, several popular choices have emerged. Atlas
 (an acronym for \textsl{automatically tuned linear algebra system} is popular
 as it has shown good performance. It is also licensed in such a way that it
 permits distributors to include it in their products.  Another popular BLAS
@@ -107,6 +107,12 @@ criticism of insufficient floating-point precisions (IEEE standard; reference
 addressed by the newest models. Dependence on particular vendors remains a
 concern which NVidia's CUDA toolkit currently still the development choice
 where the newer OpenCL standard may become a more generic successor.
+
+What has been lacking is comparison of effective performance of these
+alternative.  This paper works towards answering answer this question.
+In the next section, the technical background is discussed before the
+implementation of our approach is outlined. We then provide our results in
+the following section. A summary concludes.
 
 \section[Test Implementation]{Background and Implementation}
 
@@ -134,19 +140,52 @@ hand, result in smaller binaries that may run marginally slower -- but can
 make use of different libraries without a rebuild.  That last feature is key
 here.
 
+Because of both the standardised interface of the BLAS, and the fact that we
+have several alternative implementations at out disposal, we can readily
+switch between these alternatives. This makes use of a package mechanism
+used by the Linux distribution we employ. However, a simpler (yet less
+robust) approach would also be available. This technical aspect is discussed
+further below.
 
-Describe gotoblas2-helper
+The first available BLAS implementation stems from the original unoptimised
+code on Netlib. On Debian-based systems, it is provided by the (source)
+packages \pkg{blas} and \pkg{lapack}. It is commonly referred to as
+'reference BLAS' (and we will use 'ref' as a shorthand) as it provides a
+refernce implementation.
 
-Describe Revolution R and MKL
+The second available BLAS implementation is part of the Intel MKL. This is
+commonly a commercial package. However, Ubuntu release 9.10 (``karmic'')
+contains a set of packages sponsored by Revolution Analytics which comprises
+the Intel MKL in a setup directly useable by \proglang{R}. We will use these
+packages here as a first set of optimised BLAS.
 
-Describe Debian install / purge of packages
+The third BLAS implementation is provided by the Goto BLAS. Upon
+registration, these are freely available from the University of Texas, albeit
+under license that prohibits redistribution.  This prevents inclusion into
+popular Liux distributions.  However, the ISM in Japan provides a `helper
+package' which, given the required registration information, downloads and
+compiles the Goto BLAS in such a manner that another binary Debian package
+results.  This allow to use the package as a third BLAS alternative.
 
-Describe gputools
+The first \proglang{R} extension for graphics-processing units was provided
+by the \pkg{gputools} package. It provides a number of functions which use
+the GPU instead of the CPU, providing a noticeable speed-up for `large
+enough' problems.  Because data has to be transferred from the CPU to the
+GPU, a fixed cost in communications has to be borne by every invocation of
+the GPU.  For sizeable problems, this cost can be outweighed by the benefits
+of the massively parallel GPU computation.  Exactly where the indifference
+point lies beyond which GPU computing has an advantage is unfortunately
+dependent on the particular problem and algorithm as well as the given
+hardware and software combination.  T
 
-Describe magma
+A very recent addition to the set of \proglang{R} packages is \pkg{magma}
+which interfaces the eponymous library by Dongerra et al (which we will
+capitalize to distinguish it from the \proglang{R} package).
 
 Mention R has to be built with shared lib and external blas to allow
 switching as we do here
+
+Describe Debian install / purge of packages
 
 Mention hardware impact, show baseline results on different platforms?
 
@@ -154,22 +193,21 @@ Mention hardware impact, show baseline results on different platforms?
 
 <<print=FALSE>>=
 dbcon <- dbConnect(dbDriver("SQLite"), dbname=system.file("sql", "gcbd.sqlite", package="gcbd"))
-data <- dbReadTable(dbcon, "benchmark", row.names=0, stringsAsFactor=FALSE)
+i7 <- dbGetQuery(dbcon, 'select * from benchmark where host="max" order by nobs')
+xeon <- dbGetQuery(dbcon, 'select * from benchmark where host="xeon_X5570" order by nobs')
 invisible(dbDisconnect(dbcon))
-D <- subset(data[,-c(1:2,5)], type=="matmult")
-D <- D[order(D[,"nobs"]),]
+D <- subset(i7[,-c(1:2,5)], type=="matmult")
 @
 
 \subsection{BLAS Comparison}
 
-\subsubsection{Matrix Multiplication}
+\subsubsection{Matrix Multiplication: i7 with GPU}
 
 \setkeys{Gin}{width=0.99\textwidth}
 \begin{figure}[H]
   \centering
 <<fig=TRUE,height=6,width=12>>=
-D <- subset(data[,-c(1:2,5)], type=='matmult')
-D <- D[order(D[,"nobs"]),]
+D <- subset(i7[,-c(1:2,5)], type=='matmult')
 op <- par(mfrow=c(1,2))
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob","gpu")], type='l', lty=1, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication")
@@ -181,13 +219,30 @@ par(op)
 @
 \end{figure}
 
-\subsubsection{QR Decomposition}
+\subsubsection{Matrix Multiplication: Xeon}
 
 \begin{figure}[H]
   \centering
 <<fig=TRUE,height=6,width=12>>=
-D <- subset(data[,-c(1:2,5)], type=='qr')
-D <- D[order(D[,"nobs"]),]
+D <- subset(xeon[,-c(1:2,5)], type=='matmult')
+op <- par(mfrow=c(1,2))
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, col=cols,
+        xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication")
+legend("topleft", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, col=cols,
+        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="Matrix Multiplication", log="y")
+legend("bottomright", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
+par(op)
+@
+\end{figure}
+
+
+\subsubsection{QR Decomposition: i7 with GPU}
+
+\begin{figure}[H]
+  \centering
+<<fig=TRUE,height=6,width=12>>=
+D <- subset(i7[,-c(1:2,5)], type=='qr')
 op <- par(mfrow=c(1,2))
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob","gpu")], type='l', lty=1, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition")
@@ -199,13 +254,29 @@ par(op)
 @
 \end{figure}
 
-\subsubsection{SVD Decomposition}
+\subsubsection{QR Decomposition: Xeon}
 
 \begin{figure}[H]
   \centering
 <<fig=TRUE,height=6,width=12>>=
-D <- subset(data[,-c(1:2,5)], type=='svd')
-D <- D[order(D[,"nobs"]),]
+D <- subset(xeon[,-c(1:2,5)], type=='qr')
+op <- par(mfrow=c(1,2))
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, col=cols,
+        xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition")
+legend("topleft", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, col=cols,
+        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="QR Decomposition", log="y")
+legend("bottomright", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
+par(op)
+@
+\end{figure}
+
+\subsubsection{SVD Decomposition: i7 with GPU}
+
+\begin{figure}[H]
+  \centering
+<<fig=TRUE,height=6,width=12>>=
+D <- subset(i7[,-c(1:2,5)], type=='svd')
 op <- par(mfrow=c(1,2))
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob","gpu")], type='l', lty=1, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition")
@@ -217,6 +288,22 @@ par(op)
 @
 \end{figure}
 
+\subsubsection{SVD Decomposition: Xeon}
+
+\begin{figure}[H]
+  \centering
+<<fig=TRUE,height=6,width=12>>=
+D <- subset(xeon[,-c(1:2,5)], type=='svd')
+op <- par(mfrow=c(1,2))
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, col=cols,
+        xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition")
+legend("topleft", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, col=cols,
+        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="SVD Decomposition", log="y")
+legend("bottomright", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
+par(op)
+@
+\end{figure}
 
 
 \subsection{Magma: GPU and BLAS combined}
@@ -224,8 +311,7 @@ par(op)
 \begin{figure}[H]
   \centering
 <<fig=TRUE,height=6,width=12>>=
-D <- subset(data[,-c(1:2,5)], type=='matmult')
-D <- D[order(D[,"nobs"]),]
+D <- subset(i7[,-c(1:2,5)], type=='matmult')
 op <- par(mfrow=c(1,2))
 matplot(x=D[,"nobs"], y=D[,c("atlas","magmaAtlas","gotob","magmaGoto", "mkl", "magmaMkl")],
         type='l', lty=1, col=paircols,
@@ -242,13 +328,52 @@ par(op)
 @
 \end{figure}
 
+\begin{figure}[H]
+  \centering
+<<fig=TRUE,height=6,width=12>>=
+D <- subset(i7[,-c(1:2,5)], type=='qr')
+op <- par(mfrow=c(1,2))
+matplot(x=D[,"nobs"], y=D[,c("atlas","magmaAtlas","gotob","magmaGoto", "mkl", "magmaMkl")],
+        type='l', lty=1, col=paircols,
+        xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition")
+legend("topleft", legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
+       bty="n", col=paircols, lty=1)
+matplot(x=D[,"nobs"], y=D[,c("atlas","magmaAtlas","gotob","magmaGoto", "mkl", "magmaMkl")],
+        type='l', lty=1, col=paircols, log="y",
+        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="QR Decomposition")
+legend("bottomright",
+       legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
+       bty="n", col=paircols, lty=1)
+par(op)
+@
+\end{figure}
 
 \begin{figure}[H]
   \centering
-<<fig=TRUE,height=6,width=6>>=
-D <- subset(data[,-c(1:2,5)], type=='matmult')
-D <- D[order(D[,"nobs"]),]
+<<fig=TRUE,height=6,width=12>>=
+D <- subset(i7[,-c(1:2,5)], type=='svd')
+op <- par(mfrow=c(1,2))
+matplot(x=D[,"nobs"], y=D[,c("atlas","magmaAtlas","gotob","magmaGoto", "mkl", "magmaMkl")],
+        type='l', lty=1, col=paircols,
+        xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition")
+legend("topleft", legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
+       bty="n", col=paircols, lty=1)
+matplot(x=D[,"nobs"], y=D[,c("atlas","magmaAtlas","gotob","magmaGoto", "mkl", "magmaMkl")],
+        type='l', lty=1, col=paircols, log="y",
+        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="SVD Decomposition")
+legend("bottomright",
+       legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
+       bty="n", col=paircols, lty=1)
+par(op)
+@
+\end{figure}
 
+
+\begin{figure}[H]
+  \centering
+<<fig=TRUE,height=6,width=12>>=
+op <- par(mfrow=c(1,3))
+D <- subset(i7[,-c(1:2,5)], type=='matmult')
 N <- cbind(D[,"nobs"],
            D[,"ref"]/D[,"atlas"],
            D[,"ref"]/D[,"magmaAtlas"],
@@ -257,17 +382,50 @@ N <- cbind(D[,"nobs"],
            D[,"ref"]/D[,"mkl"],
            D[,"ref"]/D[,"magmaMkl"],
            D[,"ref"]/D[,"gpu"])
-
 matplot(x=D[,"nobs"], y=N[,-1],
         type='l', lty=1, col=paircols, #pch=".",
-        xlab="Matrix dimension", ylab="Time in seconds",
+        xlab="Matrix dimension", ylab="Performance relative to Ref.BLAS",
         main="Matrix Multiplication:\nRatio of Reference BLAS to given BLAS")
 legend("bottomright",
        legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma", "GPU"),
        bty="n", col=paircols, lty=1)
+
+D <- subset(i7[,-c(1:2,5)], type=='qr')
+N <- cbind(D[,"nobs"],
+           D[,"ref"]/D[,"atlas"],
+           D[,"ref"]/D[,"magmaAtlas"],
+           D[,"ref"]/D[,"gotob"],
+           D[,"ref"]/D[,"magmaGoto"],
+           D[,"ref"]/D[,"mkl"],
+           D[,"ref"]/D[,"magmaMkl"],
+           D[,"ref"]/D[,"gpu"])
+matplot(x=D[,"nobs"], y=N[,-1],
+        type='l', lty=1, col=paircols, #pch=".",
+        xlab="Matrix dimension", ylab="Performance relative to Ref.BLAS",
+        main="QR Decomposition:\nRatio of Reference BLAS to given BLAS")
+legend("bottomright",
+       legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma", "GPU"),
+       bty="n", col=paircols, lty=1)
+
+D <- subset(i7[,-c(1:2,5)], type=='svd')
+N <- cbind(D[,"nobs"],
+           D[,"ref"]/D[,"atlas"],
+           D[,"ref"]/D[,"magmaAtlas"],
+           D[,"ref"]/D[,"gotob"],
+           D[,"ref"]/D[,"magmaGoto"],
+           D[,"ref"]/D[,"mkl"],
+           D[,"ref"]/D[,"magmaMkl"],
+           D[,"ref"]/D[,"gpu"])
+matplot(x=D[,"nobs"], y=N[,-1],
+        type='l', lty=1, col=paircols, #pch=".",
+        xlab="Matrix dimension", ylab="Performance relative to Ref.BLAS",
+        main="SVD Decomposition:\nRatio of Reference BLAS to given BLAS")
+legend("bottomright",
+       legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma", "GPU"),
+       bty="n", col=paircols, lty=1)
+
 @
 \end{figure}
-
 
 \section[Summary]{Summary}
 

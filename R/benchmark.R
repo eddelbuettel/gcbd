@@ -38,7 +38,7 @@ svdBenchmark <- function(N, n, trim=0.1) {
 
 svdBenchmarkgputools <- function(N, n, trim=0.1) {
     a <- getMatrix(N)
-    traw <- replicate(n, sum(system.time(gpuSvd(a))[-3])
+    traw <- replicate(n, sum(system.time(gpuSvd(a))[-3]))
     tmean <- mean(traw,trim=trim)
 }
 

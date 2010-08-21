@@ -6,15 +6,15 @@ suppressMessages(library(getopt))
 ## default values
 N <- 250				# nobs
 n <- 30 				# runs
-verbose <- FALSE		# verbosity
-benchmark <- "matmult"	# benchmark to run
+verbose <- FALSE			# verbosity
+benchmark <- "matmult"			# benchmark to run
 
 ## option specification
 options <- matrix(c('verbose',   'v', 2, "integer",   paste("verbose operations, default is", ifelse(verbose, "true", "false")),
                     'help',      'h', 0, "logical",   paste("help on options"),
                     'nobs',      'n', 1, "integer",   paste("number of rows and columns in matrix, default is", N),
                     'runs',      'r', 1, "integer",   paste("number of benchmark runs, default is", n),
-                    'benchmark', 'b', 1, "character", paste("benchmark to run (matmult, qr, svd), default is", benchmark)),
+                    'benchmark', 'b', 1, "character", paste("benchmark to run (matmult, qr, svd, lu), default is", benchmark)),
                     ncol=5,
                     byrow=TRUE)
 
@@ -31,7 +31,7 @@ n         <- ifelse(is.null(opt$runs), n, opt$runs)
 verbose   <- ifelse(is.null(opt$verbose), verbose, opt$verbose)
 benchmark <- ifelse(is.null(opt$benchmark), benchmark, opt$benchmark)
 
-benchmark <- match.arg(benchmark, c("matmult", "qr", "svd"))
+benchmark <- match.arg(benchmark, c("matmult", "qr", "svd", "lu"))
 
 if (verbose) {
     cat("Running", benchmark, "on dimension", N, "for", n, "repeats\n")
@@ -43,9 +43,9 @@ purgeAtlas()
 purgeMKL()
 purgeGoto()
 
-cmd      <- paste('r -lgcbd       -e"cat(', benchmark, 'Benchmark(', N, ",", n, '))"', sep="")
-cmdmagma <- paste('r -lgcbd,magma -e"cat(', benchmark, 'Benchmark(', N, ",", n, '))"', sep="")
-cmdgpu   <- paste('r -lgcbd       -e"cat(', benchmark, 'Benchmarkgputools(', N, ",", n, '))"', sep="")
+cmd      <- paste('r -lgcbd,Matrix -e"cat(', benchmark, 'Benchmark(', N, ",", n, '))"', sep="")
+cmdmagma <- paste('r -lgcbd,magma  -e"cat(', benchmark, 'Benchmark(', N, ",", n, '))"', sep="")
+cmdgpu   <- paste('r -lgcbd        -e"cat(', benchmark, 'Benchmarkgputools(', N, ",", n, '))"', sep="")
 
 ref <- as.numeric(system(cmd, intern=TRUE))
 

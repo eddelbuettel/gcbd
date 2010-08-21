@@ -26,7 +26,7 @@ Description: GPU/CPU Benchmarking for Debian-package based system
 License: GPL (>= 2)
 LazyLoad: yes
 Depends: R (>= 2.11.1), RSQLite
-Suggests: magma, gputools
+Suggests: magma, gputools, Matrix
 SystemRequirements: Debian or Ubuntu system with access to Goto Blas and
  Intel MKL as well as Nvidia GPU with CUDA support
 OS_type: unix

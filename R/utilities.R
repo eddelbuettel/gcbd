@@ -97,9 +97,9 @@ databaseResult <- function(data,dbfile=.dbfile) {
 }
 
 hasMagma <- function() {
-    any( "magma" == .packages() )
+    any( "magma" == .packages )
 }
 
 hasGputools <- function() {
-    any( "goutools" == .packages() )
+    any( "gputools" == .packages )
 }

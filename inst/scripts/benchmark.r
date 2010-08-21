@@ -43,9 +43,9 @@ purgeAtlas()
 purgeMKL()
 purgeGoto()
 
-cmd      <- paste('r -lgcbd,Matrix -e"cat(', benchmark, 'Benchmark(', N, ",", n, '))"', sep="")
-cmdmagma <- paste('r -lgcbd,magma  -e"cat(', benchmark, 'Benchmarkmagma(', N, ",", n, '))"', sep="")
-cmdgpu   <- paste('r -lgcbd        -e"cat(', benchmark, 'Benchmarkgputools(', N, ",", n, '))"', sep="")
+cmd      <- paste('r -lgcbd,Matrix   -e"cat(', benchmark, 'Benchmark(', N, ",", n, '))"', sep="")
+cmdmagma <- paste('r -lgcbd,magma    -e"cat(', benchmark, 'Benchmarkmagma(', N, ",", n, '))"', sep="")
+cmdgpu   <- paste('r -lgcbd,gputools -e"cat(', benchmark, 'Benchmarkgputools(', N, ",", n, '))"', sep="")
 
 ref <- as.numeric(system(cmd, intern=TRUE))
 

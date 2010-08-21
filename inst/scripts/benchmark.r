@@ -66,7 +66,6 @@ purgeGoto()
 
 gpu <- ifelse( hasGputools(), as.numeric(system(cmdgpu, intern=TRUE)), NA)
 
-
 res <- data.frame(type=benchmark, nobs=N, nrun=n,
                   ref=ref,
                   atlas=atlas, magmaAtlas=magmaAtlas,

@@ -72,14 +72,12 @@ luBenchmark <- function(N, n, trim=0.1) {
     tmean <- mean(traw,trim=trim)
 }
 
-luBenchmarkMagma <- function(N, n, trim=0.1) {
+luBenchmarkmagma <- function(N, n, trim=0.1) {
     a <- getMagmaMatrix(N)
     traw <- replicate(n, sum(system.time(lu(a))[-3]))
     tmean <- mean(traw,trim=trim)
 }
 
 luBenchmarkgputools <- function(N, n, trim=0.1) {
-    NA
+    NA                                  # no LU in gputools
 }
-
-

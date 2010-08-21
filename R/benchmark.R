@@ -44,7 +44,7 @@ svdBenchmarkgputools <- function(N, n, trim=0.1) {
 
 luBenchmark <- function(N, n, trim=0.1) {
     a <- getMatrix(N)
-    traw <- replicate(n, sum(system.time(lu(a))[-3])
+    traw <- replicate(n, sum(system.time(lu(a))[-3]))
     tmean <- mean(traw,trim=trim)
 }
 

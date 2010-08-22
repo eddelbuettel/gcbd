@@ -10,7 +10,7 @@ verbose <- FALSE			# verbosity
 benchmark <- "matmult"			# benchmark to run
 
 ## option specification
-options <- matrix(c('verbose',   'v', 2, "integer",   paste("verbose operations, default is", ifelse(verbose, "true", "false")),
+options <- matrix(c('verbose',   'v', 0, "integer",   paste("verbose operations, default is", ifelse(verbose, "true", "false")),
                     'help',      'h', 0, "logical",   paste("help on options"),
                     'nobs',      'n', 1, "integer",   paste("number of rows and columns in matrix, default is", N),
                     'runs',      'r', 1, "integer",   paste("number of benchmark runs, default is", n),

@@ -3,12 +3,14 @@
 suppressMessages(library(RSQLite))
 
 runCrosstabs <- function(dbfile) {
-    dbcon <- dbConnect(dbDriver("SQLite"), dbname=dbfile)
-    d <- dbReadTable(dbcon, "benchmark")
-    dbDisconnect(dbcon)
+    if (file.exists(dbfile)) {
+        dbcon <- dbConnect(dbDriver("SQLite"), dbname=dbfile)
+        d <- dbReadTable(dbcon, "benchmark")
+        dbDisconnect(dbcon)
 
-    cat("\nFor", dbfile, "\n")
-    print(xtabs( ~ type + host, data=d))
+        cat("\nFor", dbfile, "\n")
+        print(xtabs( ~ type + host, data=d))
+    }
     invisible(NULL)
 }
 

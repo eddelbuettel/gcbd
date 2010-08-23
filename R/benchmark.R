@@ -86,5 +86,5 @@ luBenchmarkmagma <- function(N, n, trim=0.1) {
 }
 
 luBenchmarkgputools <- function(N, n, trim=0.1) {
-    NA                                  # no LU in gputools
+    NULL                                  # no LU in gputools
 }

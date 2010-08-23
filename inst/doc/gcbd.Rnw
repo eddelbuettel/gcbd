@@ -1,6 +1,6 @@
 
 %% use JSS class but for now with nojss option
-\documentclass[nojss,article]{jss}
+\documentclass[nojss,shortnames,article]{jss}
 \usepackage{float}
 
 <<echo=FALSE,print=FALSE>>=
@@ -78,7 +78,7 @@ if ( ! (file.exists("figures") && file.info("figures")$isdir) ) dir.create("figu
 %\VignetteKeywords{blas,gpu,atlas,mkl,goto}
 %\VignettePackage{gcbd}
 
-
+\shortcites{Brodtkorb_et_al_2010,Blackford_et_al:2002,lapack}
 
 %% Note that you should use the \pkg{}, \proglang{} and \code{} commands.
 
@@ -201,7 +201,7 @@ another binary Debian package is produced.  This permits us to use the Goto
 BLAS via the resulting package as a third BLAS alternative.
 
 The first \proglang{R} extension for graphics-processing units has been implemented
-by the \pkg{gputools} package \citep{cran:gputools}. It provides a number of
+by the \pkg{gputools} package \citep*{cran:gputools}. It provides a number of
 functions which use the GPU instead of the CPU which results in a significant
 performance increase for `large enough' problems.  Because data has to be transferred
 from the CPU to the GPU, a fixed cost in communications has to be borne by
@@ -213,14 +213,21 @@ as well as the given hardware and software combination.
 
 A recent addition to the set of \proglang{R} packages is \pkg{magma}
 \citep{cran:magma} which interfaces the \pkg{Magma} library project of the
-same name \citep{Tomov_et_al:2009,Tomov_et_al:2010}. We will capitalize the
-name of the library to distinguish it from the \proglang{R} package. The
+same name \citep{Tomov_et_al:2009,Tomov_et_al:2010} (where we will capitalize the
+name of the library to distinguish it from the \proglang{R} package). The
 stated goal of the Magma project it to \textsl{develop a dense linear algebra
   library similar to LAPACK but for heterogeneous/hybrid architectures,
-  starting with current "Multicore+GPU" systems}. Such a flexible and hybrid
-approach has the potential to improve upon solutions that use either the CPU
-or the GPU. To the best of our knowledge, this paper offers the first
-benchmark comparison of Magma versus BLAS implementations.
+  starting with current "Multicore+GPU" systems}.
+The current release of Magma is version 0.2 which is available for
+Linux systems with NVIDIA's CUDA toolkit, and provides
+LU, QR, and Cholesky factorizations as well as linear solvers based on these
+along with implementations pf several BLAS function including gemm, gemv,
+symv, and trsm.
+The promise
+
+A flexible and hybrid approach has the potential to improve upon solutions
+that use either the CPU or the GPU. To the best of our knowledge, this paper
+offers the first benchmark comparison of Magma versus BLAS implementations.
 
 
 \section{Implementation}
@@ -260,7 +267,7 @@ Helper scripts will then verify this while the benchmark is executed.
 
 The bechmarks described in this paper are produced by the package \pkg{gcbd}
 which is part of the larger \pkg{gcb} package on R-Forge
-\citep{rforge:gcb}. The \pkg{gcbd} package (where the acronym expands to
+\citep*{rforge:gcb}. The \pkg{gcbd} package (where the acronym expands to
 GPU/CPU Benchmarking on .deb-based systems) contains a number of \proglang{R}
 helper functions as well as an actual benchmarking script which is executed.
 
@@ -269,7 +276,7 @@ utilities fall into several categories:
 \begin{itemize}
 \item feature detection via a function \code{requirements()} which asserts
   that a number of testable features of the host operating system are met;
-\item features tests via functions \code{hasMagma()} and \code{hasGputools()}
+\item feature tests via functions \code{hasMagma()} and \code{hasGputools()}
   allowing the benchmark script to bypass GPU-based tests in systems without
   a GPU;
 \item installation and removal functions which interface the package
@@ -321,6 +328,14 @@ optional and depdendent on the GPU packages being present.
 
 At the end of each benchmark experiment, the results are appended to SQLite
 database.
+
+We use the elapsed time as measured by the \proglang{R} function
+\code{system.time()}.  This measure is preferable over the sum of system time
+and user time which add up total cputime---but without adjusting for multiple
+threads or cores. Elapsed time correctly measures from start to finish,
+whether one or multiple threads or core are involved, but is susceptible to
+be influenced by system load which is a potential shortcoming.
+
 
 \subsection{Alternative implementation}
 
@@ -503,7 +518,50 @@ On the Xeon, we see Goto BLAS once again dominate the MKL BLAS whose
 performance is seen as little erratice.
 
 
+\subsubsection{LU Decomposition: i7 with GPU}
+
+\begin{figure}[H]
+  \centering
+<<fig=TRUE,height=6,width=12>>=
+D <- subset(i7[,-c(1:2,5)], type=='lu')
+op <- par(mfrow=c(1,2))
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, col=cols,
+        xlab="Matrix dimension", ylab="Time in seconds", main="LU Decomposition")
+legend("topleft", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, col=cols, log="y",
+        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="LU Decomposition")
+legend("bottomright", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
+par(op)
+@
+\end{figure}
+
+No LU on GPU with \pkg{gputools}
+
+
+\subsubsection{LU Decomposition: Xeon}
+
+TBD
+
+\begin{figure}[H]
+  \centering
+<<fig=TRUE,height=6,width=12>>=
+#D <- subset(xeon[,-c(1:2,5)], type=='lu')
+D <- subset(i7[,-c(1:2,5)], type=='lu')
+op <- par(mfrow=c(1,2))
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, col=cols,
+        xlab="Matrix dimension", ylab="Time in seconds", main="LU Decomposition")
+legend("topleft", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, col=cols,
+        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="LU Decomposition", log="y")
+legend("bottomright", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
+par(op)
+@
+\end{figure}
+
+
 \subsection{Magma: GPU and BLAS combined}
+
+\subsubsection{Direct usage and comparison to BLAS}
 
 \begin{figure}[H]
   \centering
@@ -565,11 +623,12 @@ par(op)
 @
 \end{figure}
 
+\subsubsection{Performance relative to reference BLAS}
 
 \begin{figure}[H]
   \centering
 <<fig=TRUE,height=6,width=12>>=
-op <- par(mfrow=c(1,3))
+op <- par(mfrow=c(1,2))
 D <- subset(i7[,-c(1:2,5)], type=='matmult')
 N <- cbind(D[,"nobs"],
            D[,"ref"]/D[,"atlas"],
@@ -603,7 +662,14 @@ matplot(x=D[,"nobs"], y=N[,-1],
 legend("bottomright",
        legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma", "GPU"),
        bty="n", col=paircols, lty=1)
+@
+\end{figure}
 
+
+\begin{figure}[H]
+  \centering
+<<fig=TRUE,height=6,width=12>>=
+op <- par(mfrow=c(1,2))
 D <- subset(i7[,-c(1:2,5)], type=='svd')
 N <- cbind(D[,"nobs"],
            D[,"ref"]/D[,"atlas"],
@@ -621,8 +687,89 @@ legend("bottomright",
        legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma", "GPU"),
        bty="n", col=paircols, lty=1)
 
+D <- subset(i7[,-c(1:2,5)], type=='lu' & nobs<=2000)
+N <- cbind(D[,"nobs"],
+           D[,"ref"]/D[,"atlas"],
+           D[,"ref"]/D[,"magmaAtlas"],
+           D[,"ref"]/D[,"gotob"],
+           D[,"ref"]/D[,"magmaGoto"],
+           D[,"ref"]/D[,"mkl"],
+           D[,"ref"]/D[,"magmaMkl"])
+matplot(x=D[,"nobs"], y=N[,-1],
+        type='l', lty=1, col=paircols, #pch=".",
+        xlim=c(min(D[,"nobs"]), 4000),  # fill in for missing
+        xlab="Matrix dimension", ylab="Performance relative to Ref.BLAS",
+        main="LU Decomposition:\nRatio of Reference BLAS to given BLAS")
+legend("bottomright",
+       legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
+       bty="n", col=paircols, lty=1)
 @
 \end{figure}
+
+\subsubsection{Performance of magma and BLAS relative to BLAS}
+
+\begin{figure}[H]
+  \centering
+<<fig=TRUE,height=6,width=12>>=
+op <- par(mfrow=c(1,2))
+D <- subset(i7[,-c(1:2,5)], type=='matmult')
+N <- cbind(D[,"nobs"],
+           D[,"atlas"]/D[,"magmaAtlas"],
+           D[,"gotob"]/D[,"magmaGoto"],
+           D[,"mkl"]/D[,"magmaMkl"])
+matplot(x=D[,"nobs"], y=N[,-1],
+        type='l', lty=1, col=cols[-1], #pch=".",
+        xlab="Matrix dimension", ylab="Magma performance relative to BLAS",
+        main="Matrix Multiplication:\nRatio of BLAS to BLAS+Magma")
+legend("bottomright", legend=c("Atlas","Goto", "MKL"),
+       bty="n", col=cols[-1], lty=1)
+
+D <- subset(i7[,-c(1:2,5)], type=='qr')
+N <- cbind(D[,"nobs"],
+           D[,"atlas"]/D[,"magmaAtlas"],
+           D[,"gotob"]/D[,"magmaGoto"],
+           D[,"mkl"]/D[,"magmaMkl"])
+matplot(x=D[,"nobs"], y=N[,-1],
+        type='l', lty=1, col=cols[-1], #pch=".",
+        xlab="Matrix dimension", ylab="Magma performance relative to BLAS",
+        main="QR Decomposition:\nRatio of BLAS to BLAS+Magma")
+legend("bottomright", legend=c("Atlas","Goto", "MKL"),
+       bty="n", col=cols[-1], lty=1)
+@
+\end{figure}
+
+
+\begin{figure}[H]
+  \centering
+<<fig=TRUE,height=6,width=12>>=
+op <- par(mfrow=c(1,2))
+D <- subset(i7[,-c(1:2,5)], type=='svd')
+N <- cbind(D[,"nobs"],
+           D[,"atlas"]/D[,"magmaAtlas"],
+           D[,"gotob"]/D[,"magmaGoto"],
+           D[,"mkl"]/D[,"magmaMkl"])
+matplot(x=D[,"nobs"], y=N[,-1],
+        type='l', lty=1, col=cols[-1], #pch=".",
+        xlab="Matrix dimension", ylab="Magma performance relative to BLAS",
+        main="SVD Decomposition:\nRatio of BLAS to BLAS+Magma")
+legend("bottomright", legend=c("Atlas", "Goto", "MKL"),
+       bty="n", col=cols[-1], lty=1)
+
+D <- subset(i7[,-c(1:2,5)], type=='lu' & nobs<=2000)
+N <- cbind(D[,"nobs"],
+           D[,"atlas"]/D[,"magmaAtlas"],
+           D[,"gotob"]/D[,"magmaGoto"],
+           D[,"mkl"]/D[,"magmaMkl"])
+matplot(x=D[,"nobs"], y=N[,-1],
+        type='l', lty=1, col=cols[-1], #pch=".",
+        xlim=c(min(D[,"nobs"]), 4000),  # fill in for missing
+        xlab="Matrix dimension", ylab="Magma oerformance relative to BLAS",
+        main="LU Decomposition:\nRatio of BLAS to BLAS+Magma")
+legend("bottomright", legend=c("Atlas", "Goto", "MKL"),
+       bty="n", col=cols[-1], lty=1)
+@
+\end{figure}
+
 
 \section[Summary]{Summary}
 

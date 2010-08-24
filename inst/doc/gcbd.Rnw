@@ -8,7 +8,7 @@ options(width=50)
 library(gcbd)
 gcbd.version <- packageDescription("gcbd")$Version
 gcbd.date <- packageDescription("gcbd")$Date
-now.date <- strftime(Sys.Date(), "%B %m, %Y")
+now.date <- strftime(Sys.Date(), "%B %d, %Y")
 # dput(brewer.pal(5, "Set1"))
 cols <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00")
 # dput(brewer.pal(8,"Paired"))
@@ -540,13 +540,10 @@ No LU on GPU with \pkg{gputools}
 
 \subsubsection{LU Decomposition: Xeon}
 
-TBD
-
 \begin{figure}[H]
   \centering
 <<fig=TRUE,height=6,width=12>>=
-#D <- subset(xeon[,-c(1:2,5)], type=='lu')
-D <- subset(i7[,-c(1:2,5)], type=='lu')
+D <- subset(xeon[,-c(1:2,5)], type=='lu')
 op <- par(mfrow=c(1,2))
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds", main="LU Decomposition")

@@ -1,6 +1,5 @@
 
 .dbfile <- "/var/tmp/gcbd.sqlite"
-.packages <- as.character(installed.packages()[,1])
 
 requirements <- function() {
 
@@ -96,10 +95,15 @@ databaseResult <- function(data,dbfile=.dbfile) {
 
 }
 
+isPackageInstalled <- function(package, ...) { # Henrik Bengtsson, r-devel, 24 Aug 2010
+    path <- system.file(package=package)
+    (path != "")
+}
+
 hasMagma <- function() {
-    any( "magma" == .packages )
+    isPackageInstalled("magma")
 }
 
 hasGputools <- function() {
-    any( "gputools" == .packages )
+    isPackageInstalled("gputools")
 }

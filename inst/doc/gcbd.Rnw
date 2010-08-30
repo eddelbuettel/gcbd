@@ -428,9 +428,11 @@ We present the benchmark results (which are also included in the \pkg{gcbd}
 package in the file \code{sql/gcbd.sqlite}).  We will show one type of
 benchmark per test architecture (currently: i7 or xeon) with times first
 shown on a regular scale (with the matrix dimension on the horizontal axis
-and the elapsed time in seconds on the vertical axis), and also with elapsed
-time on on a log-scale in order to better differentiate between smaller
-values.
+and the elapsed time in seconds on the vertical axis), and also with both
+matrix dimension and elapsed time on on a log-scale in order to better
+differentiate between alternatives.\footnote{I am grateful to Allan
+  Engelhardt for suggesting to switch from a plot with logged y-axis to
+  a log-log plot.}
 
 \subsubsection{Matrix Multiplication: i7 with GPU}
 
@@ -444,7 +446,7 @@ matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob","gpu")], type='l', lty=
         xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication")
 legend("topleft", legend=c("Ref","Atlas","MKL","Goto","GPU"), bty="n", col=cols, lty=1)
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob","gpu")], type='l', lty=1, lwd=2, col=cols,
-        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="Matrix Multiplication", log="y")
+        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="Matrix Multiplication", log="xy")
 legend("bottomright", legend=c("Ref","Atlas","MKL","Goto","GPU"), bty="n", col=cols, lty=1)
 par(op)
 @
@@ -470,7 +472,7 @@ matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, lwd
         xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication")
 legend("topleft", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, lwd=2, col=cols,
-        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="Matrix Multiplication", log="y")
+        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="Matrix Multiplication", log="xy")
 legend("bottomright", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
 par(op)
 @
@@ -494,7 +496,7 @@ op <- par(mfrow=c(1,2))
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob","gpu")], type='l', lty=1, lwd=2, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition")
 legend("topleft", legend=c("Ref","Atlas","MKL","Goto","GPU"), bty="n", col=cols, lty=1)
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob","gpu")], type='l', lty=1, lwd=2, col=cols, log="y",
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob","gpu")], type='l', lty=1, lwd=2, col=cols, log="xy",
         xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="QR Decomposition")
 legend("bottomright", legend=c("Ref","Atlas","MKL","Goto","GPU"), bty="n", col=cols, lty=1)
 par(op)
@@ -519,7 +521,7 @@ matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, lwd
         xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition")
 legend("topleft", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, lwd=2, col=cols,
-        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="QR Decomposition", log="y")
+        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="QR Decomposition", log="xy")
 legend("bottomright", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
 par(op)
 @
@@ -541,7 +543,7 @@ op <- par(mfrow=c(1,2))
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob","gpu")], type='l', lty=1, lwd=2, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition")
 legend("topleft", legend=c("Ref","Atlas","MKL","Goto","GPU"), bty="n", col=cols, lty=1)
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob","gpu")], type='l', lty=1, lwd=2, col=cols, log="y",
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob","gpu")], type='l', lty=1, lwd=2, col=cols, log="xy",
         xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="SVD Decomposition")
 legend("bottomright", legend=c("Ref","Atlas","MKL","Goto","GPU"), bty="n", col=cols, lty=1)
 par(op)
@@ -566,7 +568,7 @@ matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, lwd
         xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition")
 legend("topleft", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, lwd=2, col=cols,
-        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="SVD Decomposition", log="y")
+        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="SVD Decomposition", log="xy")
 legend("bottomright", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
 par(op)
 @
@@ -588,7 +590,7 @@ op <- par(mfrow=c(1,2))
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, lwd=2, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds", main="LU Decomposition")
 legend("topleft", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, lwd=2, col=cols, log="y",
+matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, lwd=2, col=cols, log="xy",
         xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="LU Decomposition")
 legend("bottomright", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
 par(op)
@@ -615,7 +617,7 @@ matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, lwd
         xlab="Matrix dimension", ylab="Time in seconds", main="LU Decomposition")
 legend("topleft", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","mkl","gotob")], type='l', lty=1, lwd=2, col=cols,
-        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="LU Decomposition", log="y")
+        xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="LU Decomposition", log="xy")
 legend("bottomright", legend=c("Ref","Atlas","MKL","Goto"), bty="n", col=cols, lty=1)
 par(op)
 @
@@ -646,7 +648,7 @@ this potential is already realised with the early versions of Magma.
 % legend("topleft", legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
 %        bty="n", col=paircols, lty=1)
 % matplot(x=D[,"nobs"], y=D[,c("atlas","magmaAtlas","gotob","magmaGoto", "mkl", "magmaMkl")],
-%         type='l', lty=1, lwd=2, col=paircols, log="y",
+%         type='l', lty=1, lwd=2, col=paircols, log="xy",
 %         xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="Matrix Multiplication")
 % legend("bottomright",
 %        legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
@@ -666,7 +668,7 @@ this potential is already realised with the early versions of Magma.
 % legend("topleft", legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
 %        bty="n", col=paircols, lty=1)
 % matplot(x=D[,"nobs"], y=D[,c("atlas","magmaAtlas","gotob","magmaGoto", "mkl", "magmaMkl")],
-%         type='l', lty=1, lwd=2, col=paircols, log="y",
+%         type='l', lty=1, lwd=2, col=paircols, log="xy",
 %         xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="QR Decomposition")
 % legend("bottomright",
 %        legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
@@ -686,7 +688,7 @@ this potential is already realised with the early versions of Magma.
 % legend("topleft", legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
 %        bty="n", col=paircols, lty=1)
 % matplot(x=D[,"nobs"], y=D[,c("atlas","magmaAtlas","gotob","magmaGoto", "mkl", "magmaMkl")],
-%         type='l', lty=1, lwd=2, col=paircols, log="y",
+%         type='l', lty=1, lwd=2, col=paircols, log="xy",
 %         xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="SVD Decomposition")
 % legend("bottomright",
 %        legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),

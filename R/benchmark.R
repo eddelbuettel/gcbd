@@ -1,6 +1,12 @@
 
+hilbert <- function(n) {
+    i <- 1:n
+    1 / outer(i - 1, i, "+")
+}
+
 getMatrix <- function(N) {
     a <- rnorm(N*N)
+    #a <- hilbert(N)
     dim(a) <- c(N,N)
     invisible(gc())
     invisible(a)
@@ -8,6 +14,7 @@ getMatrix <- function(N) {
 
 getMagmaMatrix <- function(N) {
     a <- magma(rnorm(N*N), N, N)
+    #a <- magma( hilbert(N), N, N, gpu=TRUE)
     invisible(gc())
     invisible(a)
 }

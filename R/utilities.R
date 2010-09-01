@@ -61,6 +61,16 @@ purgeGoto <- function() {
     invisible(res)
 }
 
+installAtlas39 <- function() {
+    res <- system("sudo wajig -y install /var/spool/atlas39/libatlas39_3.9.25-1_amd64.deb", intern=TRUE, ignore.stderr=TRUE)
+    invisible(res)
+}
+
+purgeAtlas39 <- function() {
+    res <- system("sudo apt-get -y --force-yes purge libatlas39", intern=TRUE, ignore.stderr=TRUE)
+    invisible(res)
+}
+
 createDatabase <- function(dbfile=.dbfile) {
 
     dbi <- dbDriver("SQLite")
@@ -74,6 +84,7 @@ createDatabase <- function(dbfile=.dbfile) {
     dftypes <- list(host="text", datum="text", type="text",
                     nobs="integer", nrun="integer",
                     ref="real", atlas="real", magmaAtlas="real",
+                    atl39="real", magmaAtl39="real",
                     mkl="real", magmaMkl="real",
                     gotob="real", magmaGoto="real",
                     gpu="real")

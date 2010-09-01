@@ -39,13 +39,13 @@ matmultBenchmarkgputools <- function(N, n, trim=0.1) {
 
 qrBenchmark <- function(N, n, trim=0.1) {
     a <- getMatrix(N)
-    traw <- replicate(n, system.time(qr(a))[3])
+    traw <- replicate(n, system.time(qr(a, LAPACK=TRUE))[3])
     tmean <- mean(traw,trim=trim)
 }
 
 qrBenchmarkmagma <- function(N, n, trim=0.1) {
     a <- getMagmaMatrix(N)
-    traw <- replicate(n, system.time(qr(a, LAPACK=TRUE))[3])
+    traw <- replicate(n, system.time(qr(a))[3])
     tmean <- mean(traw,trim=trim)
 }
 

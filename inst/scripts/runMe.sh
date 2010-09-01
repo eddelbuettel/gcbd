@@ -1,7 +1,6 @@
 #!/bin/bash
 
-#for b in lu qr svd matmult;
-for b in qr svd matmult;
+for b in lu qr svd matmult;
 do 
     ##for n in 250 500 750 1000 1250 1500 1750 2000 2250 2500 2750 3000 3250 3500 3750 4000; 
 	for n in 100 200 300 400 500 600 700 800 900 1000 1250 1500 1750 2000 2500 3000 3500 4000 4500 5000;
@@ -16,6 +15,6 @@ do
 			r=5
 		fi
 		echo "Now starting $n $r $b"
-		./benchmark.r -n $n -r $r -b lu -v
+		./benchmark.r -n $n -r $r -b $b -v
 	done
 done

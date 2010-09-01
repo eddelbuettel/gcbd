@@ -75,7 +75,7 @@ gpu <- ifelse( hasGputools(), as.numeric(system(cmdgpu, intern=TRUE)), NA)
 res <- data.frame(type=benchmark, nobs=N, nrun=n,
                   ref=ref,
                   atlas=atlas, magmaAtlas=magmaAtlas,
-                  atl39=atl39, magmaAtlas=magmaAtl39,
+                  atl39=atl39, magmaAtl39=magmaAtl39,
                   mkl=mkl, magmaMkl=magmaMkl,
                   gotob=goto, magmaGoto=magmaGoto,
                   gpu=gpu)

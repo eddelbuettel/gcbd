@@ -22,7 +22,7 @@ if ( ! (file.exists("figures") && file.info("figures")$isdir) ) dir.create("figu
 \title{Benchmarking single- and multi-core BLAS implementations and GPUs for use with \proglang{R}}
 
 \Plainauthor{Dirk Eddelbuettel} % , Second Author} %% comma-separated
-\Plaintitle{Benchmarking Single- and Multi-Core BLAS Implementaions and GPUs for Use with R}
+\Plaintitle{Benchmarking Single- and Multi-Core BLAS Implementations and GPUs for Use with R}
 \Shorttitle{Benchmarking BLAS and GPUs for Use with R}
 
 
@@ -51,11 +51,11 @@ if ( ! (file.exists("figures") && file.info("figures")$isdir) ) dir.create("figu
   multi-threaded BLAS implementations, Goto is seen to have a slight
   advantage over MKL.  GPU computing is showing a promise but requires
   realtively large matrices to outperform multi-threaded BLAS.  Lastly, the
-  hybrid approach that is being implemented by the Magma project is also
-  showing promise, as well as problems with stability in the current version.
+  hybrid approach that is being implemented by the Magma project is
+  intriguing but exhibits problems with stability in the current version.
 }
 \Keywords{BLAS, Atlas, Goto, MKL, GPU, \proglang{R}} %% at least one keyword must be supplied
-\Plainkeywords{BLAS, Atlas, Goto, MKL, GPU, R} %% without formatting
+\Plainkeywords{BLAS, Atlas, Goto, MKL, GPU, R, Linux} %% without formatting
 
 %% publication information
 %% NOTE: Typically, this can be left commented and will be filled out by the technical editor
@@ -104,7 +104,7 @@ optimised algebra subprograms (BLAS).  Optimised BLAS libraries have been
 included with some (commercial) analysis platforms for a decade
 \citep{Moler:2000}, and have also been available for (at least some) Linux
 distributions for an equally long time \citep{Maguire:1999}.  Setting BLAS up
-can be dauting:  the \proglang{R} language and environment devotes a detailed
+can be daunting:  the \proglang{R} language and environment devotes a detailed
 discussion to the topic in its \textsl{Installation and Administration}
 manual \citep[appendix A.3.1]{RCore:InstAdmin}.
 
@@ -205,7 +205,7 @@ distributions. Windows binaries are also widely available.
 The third BLAS implementation is provided by the Goto BLAS. Upon the required
 user registration, these are freely available from the University of Texas,
 albeit under a license that prohibits redistribution.  This prevents
-inclusion into popular Liux distributions, a clear disadvantage for easy
+inclusion into popular Linux distributions, a clear disadvantage for easy
 installation and de-installation.  However, the contributed Debian repository
 at the Institute for Statistical Mathematics in Japan provides a `helper
 package' \citep{Nakama:2010} which, given the required registration
@@ -458,8 +458,8 @@ single-threaded Atlas performance is also dominated by the multi-threaded
 BLAS (Goto, MKL) and the GPU-based gputools.  We also see (more clearly in
 logs) that the GPU-based solution bears a clear penalty for smaller
 dimensions and becomes close to being competetive with MKL and Goto without
-actually surpassing them on the chosen matrix sizes. On the log-chart, we can
-also see a small edge for Goto over MKL.
+actually surpassing them on the chosen matrix sizes. We also see anedge for
+the Goto BLAS over the MKL.
 
 \subsubsection{Matrix Multiplication: Xeon}
 
@@ -531,7 +531,7 @@ par(op)
 This benchmark indicates a possible error or bug in this version of the Goto
 library as it is somewhat surprisingly dominated by the reference BLAS and
 Atlas, as well as the MKL.  Otherwise, results are reasonably close as on the
-platform.
+i7-based hardware platform shown above.
 
 \subsubsection{SVD Decomposition: i7 with GPU}
 
@@ -598,12 +598,13 @@ par(op)
 \caption{LU decomposition on i7 with GPU}
 \end{figure}
 
-LU decomposition results are similar to earlier results. Reference BLAS are
-by far the slowest, Atlas beats them clearly and looses equally clearly to
-the multi-threaded BLAS.  MKL performance is once again very similar to Goto
-for the LU decompostion.  For this algorithm, no GPU-based performance
-numbers are available as the current version of the \pkg{gputools} package
-does not provide a LU decomposition.
+LU decomposition results, using the function from the \citep{cran:matrix}
+package, are similar to earlier results. Reference BLAS are by far the
+slowest, Atlas beats them clearly and loses equally clearly to the
+multi-threaded BLAS.  MKL performance is once again very similar to Goto for
+the LU decompostion.  For this algorithm, no GPU-based performance numbers
+are available as the current version of the \pkg{gputools} package does not
+provide a LU decomposition.
 
 
 \subsubsection{LU Decomposition: Xeon}
@@ -859,7 +860,7 @@ legend("bottomright", legend=c("Atlas", "Goto", "MKL"),
 
 For the SVD decomposition, we see good initial gains for all three BLAS
 libraries tested along with Magma. However, once the matrix dimension
-increases performance becomes indistinguisable from a use of just the
+increases performance becomes indistinguishable from a use of just the
 accelerated BLAS.
 
 For LU decomposition, we experienced similar difficulties as for QR
@@ -872,7 +873,7 @@ multiplication---and unimpressive for Goto and MKL.
 We present benchmarking results comparing four different BLAS implementations
 for four different matrix computations on two different hardware platforms.
 We find reference BLAS to be dominated in all cases. Single-threaded Atlas
-BLAS improves on the reference BLAS but looses to multi-threaded BLAS.
+BLAS improves on the reference BLAS but loses to multi-threaded BLAS.
 
 For multi-threaded BLAS we find the Goto BLAS dominate the Intel MKL, with a
 single exception of the QR decomposition on the xeon-based system which may
@@ -881,7 +882,7 @@ reveal an error.
 GPU computing, when used is isolation, is found to be compelling only for
 very large matrix sizes.  However, a hybrid approach as suggested by Magma
 \citep{Tomov_et_al:2009,Tomov_et_al:2010} has potential to dominate the
-field.  Yet the current implementation was seen to be not yet ready, as least
+field.  Yet the current implementation was seen to be not yet ready, at least
 not for the current library version and the hardware choice at our disposal.
 
 Our benchmarking framework can be employed by others through the \proglang{R}
@@ -906,7 +907,7 @@ The following Ubuntu package were used to provide the differnt BLAS
 implementations: \pkg{libblas} 1.2-build1, \pkg{liblapack3gf} 3.2.1-2,
 \pkg{libatlas3gf-base} 3.6.0-24ubuntu, \pkg{revolution-mkl} 3.0.0-1ubuntu1,
 and \pkg{gotoblas2} 1.13-1 which was built using \pkg{gotoblas2-helper}
-0.1-12 by \citet{Nakama:2010}. Apart from \pkg{gotoblas2-hel[er} and
+0.1-12 by \citet{Nakama:2010}. Apart from \pkg{gotoblas2-helper} and
 \pkg{gotoblas2}, all these package are available via every Ubuntu mirror.
 
 \section*{Disclaimers}
@@ -919,3 +920,31 @@ package and integration of REvolution R into Ubuntu 9.10.
 \bibliography{gcbd}
 
 \end{document}
+
+%% TODOs:
+%%
+%% Allan, Luke:  multithreaded Atlas, and tuned (Allan)
+%%
+%% Mark:  Please also mention memory as a factor in performance - e.g.,
+%%    cutoff point for the gpuLm() command differed between DDR2 and DDR3.
+%%
+%% Mark:  In the introduction to Magma, it may be worth pointing out that
+%%    the software dynamically selects the appropriate combination of hardware
+%%    to use, based on characteristics of the data.  This can be inferred
+%%    from Figure 1, but is not entirely obvious at first glance.
+%%
+%% Luke:  On QR you might be explicit which one you are using, LINPACK or
+%%    LAPACK.  Default in R is still LINPACK, which only uses level 1 BLAS
+%%    so won't see much benefit of fancy BLAS implementations.  LAPACK sees
+%%    more benefit I think.
+%%
+%% Luke:
+%%    In your magma comparisons are you comparing single/single or
+%%    double/double?  Also I assume in the plots above one means magma is
+%%    better (so it soind better on intermediate size matrices?) but that
+%%    could be more explicit.
+%%
+%% Dirk :)
+%%    Mention Debian blas convention, /etc/ld.so.conf.d/*conf
+%%    Think about table with raw data
+%%    Add regressions ...

@@ -3,28 +3,12 @@
 \documentclass[nojss,shortnames,article]{jss}
 \usepackage{float}
 
-<<echo=FALSE,print=FALSE>>=
-options(width=50)
-library(gcbd)
-gcbd.version <- packageDescription("gcbd")$Version
-gcbd.date <- packageDescription("gcbd")$Date
-now.date <- strftime(Sys.Date(), "%B %d, %Y")
-# dput(brewer.pal(5, "Set1"))
-cols <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00")
-# dput(brewer.pal(8,"Paired"))
-paircols <- c("#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C", "#FB9A99", "#E31A1C", "#FDBF6F", "#FF7F00")
-# create figures/ if not present
-if ( ! (file.exists("figures") && file.info("figures")$isdir) ) dir.create("figures")
-@
-%
-
 \author{Dirk Eddelbuettel\\Debian Project} % \And Second Author\\Plus Affiliation}
 \title{Benchmarking single- and multi-core BLAS implementations and GPUs for use with \proglang{R}}
 
 \Plainauthor{Dirk Eddelbuettel} % , Second Author} %% comma-separated
 \Plaintitle{Benchmarking Single- and Multi-Core BLAS Implementations and GPUs for Use with R}
 \Shorttitle{Benchmarking BLAS and GPUs for Use with R}
-
 
 \Abstract{
   \noindent
@@ -54,7 +38,7 @@ if ( ! (file.exists("figures") && file.info("figures")$isdir) ) dir.create("figu
   hybrid approach that is being implemented by the Magma project is
   intriguing but exhibits problems with stability in the current version.
 }
-\Keywords{BLAS, Atlas, Goto, MKL, GPU, \proglang{R}} %% at least one keyword must be supplied
+\Keywords{BLAS, Atlas, Goto, MKL, GPU, \proglang{R}, Linux} %% at least one keyword must be supplied
 \Plainkeywords{BLAS, Atlas, Goto, MKL, GPU, R, Linux} %% without formatting
 
 %% publication information
@@ -78,7 +62,6 @@ if ( ! (file.exists("figures") && file.info("figures")$isdir) ) dir.create("figu
 
 %% need no \usepackage{Sweave.sty}
 
-
 % ------------------------------------------------------------------------
 
 \begin{document}
@@ -91,6 +74,21 @@ if ( ! (file.exists("figures") && file.info("figures")$isdir) ) dir.create("figu
 \shortcites{Brodtkorb_et_al_2010,Blackford_et_al:2002,lapack}
 
 %% Note that you should use the \pkg{}, \proglang{} and \code{} commands.
+
+<<echo=FALSE,print=FALSE>>=
+options(width=50)
+library(gcbd)
+gcbd.version <- packageDescription("gcbd")$Version
+gcbd.date <- packageDescription("gcbd")$Date
+now.date <- strftime(Sys.Date(), "%B %d, %Y")
+# dput(brewer.pal(5, "Set1"))
+cols <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00")
+# dput(brewer.pal(8,"Paired"))
+paircols <- c("#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C", "#FB9A99", "#E31A1C", "#FDBF6F", "#FF7F00")
+# create figures/ if not present
+if ( ! (file.exists("figures") && file.info("figures")$isdir) ) dir.create("figures")
+@
+%
 
 This version corresponds to \pkg{gcbd} \Sexpr{gcbd.version} and was compiled
 on \Sexpr{now.date}. \textbf{This is an incomplete and early version with
@@ -207,8 +205,8 @@ user registration, these are freely available from the University of Texas,
 albeit under a license that prohibits redistribution.  This prevents
 inclusion into popular Linux distributions, a clear disadvantage for easy
 installation and de-installation.  However, the contributed Debian repository
-at the Institute for Statistical Mathematics in Japan provides a `helper
-package' \citep{Nakama:2010} which, given the required registration
+at the Institute of Statistical Mathematics in Japan provides a `helper
+package' \citep{nakano_nakama:2009} which, given the required registration
 information, downloads the source code from the University of Texas site, and
 then configure and compiles the Goto BLAS in such a manner that a local
 binary Debian package is produced---which is also optmised for the local
@@ -277,7 +275,7 @@ Debian and Ubuntu releases.  The Intel MKL is available for Ubuntu following
 the Revolution R upload for Ubuntu release 9.10.
 
 For Goto BLAS, we are using a helper script provided in the contributed
-\texttt{gotoblas2-helper} package \citep{Nakama:2010}. This package arranges
+\texttt{gotoblas2-helper} package \citep{nakano_nakama:2009}. This package arranges
 for a download of the Goto BLAS sources (provided the required account and
 password information for the University of Texas software download center)
 and an automated Debian package build and installation via the command
@@ -907,7 +905,7 @@ The following Ubuntu package were used to provide the differnt BLAS
 implementations: \pkg{libblas} 1.2-build1, \pkg{liblapack3gf} 3.2.1-2,
 \pkg{libatlas3gf-base} 3.6.0-24ubuntu, \pkg{revolution-mkl} 3.0.0-1ubuntu1,
 and \pkg{gotoblas2} 1.13-1 which was built using \pkg{gotoblas2-helper}
-0.1-12 by \citet{Nakama:2010}. Apart from \pkg{gotoblas2-helper} and
+0.1-12 by \citet{nakano_nakama:2009}. Apart from \pkg{gotoblas2-helper} and
 \pkg{gotoblas2}, all these package are available via every Ubuntu mirror.
 
 \section*{Disclaimers}
@@ -948,3 +946,11 @@ package and integration of REvolution R into Ubuntu 9.10.
 %%    Mention Debian blas convention, /etc/ld.so.conf.d/*conf
 %%    Think about table with raw data
 %%    Add regressions ...
+%%
+%% Allan
+%%   p. 9 - qr single threaded - your comment got me digging a little more
+%%   and, as best as I can read the source, the qr() function calls
+%%   .Fortran("dqrdc2", ...) [unless you use the LAPACK=TRUE argument] which
+%%   is provided not by BLAS but by R itself in src/appl/dqrdc2.f (not
+%%   src/extra/blas !)  This is a Ross Ihaka special; the original is
+%%   http://www.netlib.org/linpack/dqrdc.f (i.e. without the 2 at the end).

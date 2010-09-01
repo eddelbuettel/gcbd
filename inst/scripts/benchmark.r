@@ -53,19 +53,21 @@ ref <- as.numeric(system(cmd, intern=TRUE))
 installAtlas()
 atlas      <- as.numeric(system(cmd,      intern=TRUE))
 magmaAtlas <- ifelse( hasMagma(), as.numeric(system(cmdmagma, intern=TRUE)), NA)
-#system(cmdtest)
 purgeAtlas()
+
+installAtlas39()
+atl39      <- as.numeric(system(cmd,      intern=TRUE))
+magmaAtl39 <- ifelse( hasMagma(), as.numeric(system(cmdmagma, intern=TRUE)), NA)
+purgeAtlas39()
 
 installMKL()
 mkl      <- as.numeric(system(cmd,      intern=TRUE))
 magmaMkl <- ifelse( hasMagma(), as.numeric(system(cmdmagma, intern=TRUE)), NA)
-#system(cmdtest)
 purgeMKL()
 
 installGoto()
 goto      <- as.numeric(system(cmd,      intern=TRUE))
 magmaGoto <- ifelse( hasMagma(), as.numeric(system(cmdmagma, intern=TRUE)), NA)
-#system(cmdtest)
 purgeGoto()
 
 gpu <- ifelse( hasGputools(), as.numeric(system(cmdgpu, intern=TRUE)), NA)
@@ -73,6 +75,7 @@ gpu <- ifelse( hasGputools(), as.numeric(system(cmdgpu, intern=TRUE)), NA)
 res <- data.frame(type=benchmark, nobs=N, nrun=n,
                   ref=ref,
                   atlas=atlas, magmaAtlas=magmaAtlas,
+                  atl39=atl39, magmaAtlas=magmaAtl39,
                   mkl=mkl, magmaMkl=magmaMkl,
                   gotob=goto, magmaGoto=magmaGoto,
                   gpu=gpu)

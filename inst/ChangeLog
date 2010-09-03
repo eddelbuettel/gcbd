@@ -1,7 +1,13 @@
+2010-09-02  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Version 0.2.0
+
+	* inst/sql/gcbd.sqlite: Results from 'run 2'
+
 2010-09-01  Dirk Eddelbuettel  <edd@debian.org>
 
         * inst/scripts/benchmark.r: Added atl39 calls
-	
+
         * R/utilities.R: Added Atlas 3.9.* support
         * R/benchmark.R: Added qr() uses LAPACK=TRUE
 
@@ -38,5 +44,5 @@
 
 	* inst/sql/: renamed from inst/data
 
-	* Release 0.1.0 and initial committ
+	* DESCRIPTION: Release 0.1.0 and initial committ
 

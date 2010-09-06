@@ -4,11 +4,14 @@
 \alias{createDatabase}
 \alias{databaseResult}
 \alias{installAtlas}
+\alias{installAtlas39}
 \alias{installGoto}
 \alias{installMKL}
 \alias{purgeAtlas}
+\alias{purgeAtlas39}
 \alias{purgeGoto}
 \alias{purgeMKL}
+\alias{isPackageInstalled}
 \alias{hasGputools}
 \alias{hasMagma}
 \title{Utility functions for GPU/CPU Benchmarking}
@@ -22,18 +25,22 @@
   databaseResult(data,dbfile)
 
   installAtlas()
+  installAtlas39()
   installGoto()
   installMKL()
   purgeAtlas()
+  purgeAtlas39()
   purgeGoto()
   purgeMKL()
 
+  isPackageInstalled(package)
   hasGputools()
   hasMagma()
 }
 \arguments{
   \item{data}{a (one-row) dataframe containing results from a benchmark}
   \item{dbfile}{character string containing path and name of SQLite database file}
+  \item{package}{character string denoting a package to test for}
 }
 \details{
   \code{requirements} checks for a few system requirements such platform
@@ -52,6 +59,8 @@
 
   The functions \code{hasGputools} and \code{hasMagma} test for presence
   of these CRAN package on the current machines -- as a very cheap proxy
-  to testing whether the machine in GPU-capable or not.
+  to testing whether the machine in GPU-capable or not. They use the
+  function \code{isPackageInstalled} for this test.
+ 
 }  
 \keyword{misc}

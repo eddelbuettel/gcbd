@@ -76,7 +76,7 @@
 
 %% Note that you should use the \pkg{}, \proglang{} and \code{} commands.
 
-<<echo=FALSE,print=FALSE>>=
+<<prelim,echo=FALSE,print=FALSE>>=
 options(width=50)
 library(gcbd)
 gcbd.version <- packageDescription("gcbd")$Version
@@ -91,10 +91,15 @@ if ( ! (file.exists("figures") && file.info("figures")$isdir) ) dir.create("figu
 @
 %
 
+I am very grateful for helpful and detailed comments and suggestions from
+Roger Bivand, Allan Engelhardt, Bryan Lewis, Junji Nakano, Mark Seligmanm,
+Brian Smith and Luke Tierney. All remaining errors are mine.
+
 This version corresponds to \pkg{gcbd} \Sexpr{gcbd.version} and was compiled
 on \Sexpr{now.date}. \textbf{This is an incomplete and early version with
   possibly premature results. Please do not circulate or cite.}
 
+%\pagebreak
 \section[Introduction]{Introduction}
 
 Analysts are often eager to reap the maximum performance from their computing
@@ -113,8 +118,8 @@ emerged. Atlas (an acronym for \textsl{Automatically Tuned Linear Algebra
 automated and cpu-specific tuning \citep{Whaley_Dongarra:1999,
   Whaley_Petitet:2005}. It is also licensed in such a way that it permits
 redistribution leading to fairly wide availability of Atlas.\footnote{The
-  Atlas FAQ at lists Maple, Matlab, Mathematica, Octave as using Atlas, and
-  mentions that GSL, HPL, R, Scientific Python, and Scilab can be used with
+  Atlas FAQ lists Maple, Matlab and Mathematica as using Atlas, and
+  mentions that GSL, Octave, R, Scientific Python, and Scilab can be used with
   Atlas.}  Another popular BLAS implementation is Goto BLAS which is named
 after its main developer, Kazushige Goto \citep{Goto_VanDeGeijin:2008}. While
 `free to use', its license does not permit redistribution putting the onus of
@@ -200,12 +205,20 @@ to as 'reference BLAS' (and we will use 'ref' as a shorthand) as it provides
 a reference implementation.
 
 The second BLAS implementation is provided by Atlas
-\citep{Whaley_Dongarra:1999,Whaley_Petitet:2005}. Its names stands for
+\citep{Whaley_Dongarra:1999,Whaley_Petitet:2005} which stands for
 \textsl{Automatically Tuned Linear Algebra Software} as it optimises its
 performance and parameters (such as cache sizes) during its initial build.
 Another notable aspect is its liberal licensing which permits wide
 distribution. Consequently, Atlas is available on most if not all Linux
 distributions. Windows binaries are also widely available.
+We used two different Atlas versions. The first one is the version in the
+Ubuntu and Debian relases. It is based on Atlas 3.6.0 and built only for
+single-threaded operation.  The second version is based on the current Atlas
+development version 3.9.25 and built for multi-threaded mode.\footnote{We
+  used a local binary package for this; a critical change enabling
+  multi-threaded mode was also reported as Debian bug report \#595326 which
+  will be reflected in future Debian packages.} We will refer to the second
+variant as 'Atl39' when we report results below.
 
 The third BLAS implementation is provided by the Goto BLAS. Upon the required
 user registration, these are freely available from the University of Texas,
@@ -254,9 +267,9 @@ relative workload between CPU and GPU when using Magma for a
 total computing effort that goes to the GPU increases as a function of the
 matrix size.
 
-\begin{figure}[H]
+\begin{figure}[htb]
   \centering
-  \includegraphics[width=5in]{MagmaTimes.png}
+  \includegraphics[width=4in]{MagmaTimes.png}
   \caption{Breakdown of CPU and GPU computing percentages for
     single-precision QR decomposition using the hybrid Magma
     approach. (Source: \citet[p.7]{Tomov_et_al:2009})}
@@ -392,6 +405,7 @@ the user of the benchmarking software as she would have to install the BLAS
 libraries which is typically not a trivial step.
 
 \subsection{Hardware and software considerations}
+\label{subsec:hardware}
 
 For benchmarking linear algebra performance, hardware and software aspects
 matter greatly for the overall results. Different CPUs, different GPUs as
@@ -431,7 +445,7 @@ something similar on OS X to measure the performance of the vecLib system.
 \pagebreak
 \section[Results]{Results}
 
-<<print=FALSE>>=
+<<data,print=FALSE>>=
 dbcon <- dbConnect(dbDriver("SQLite"), dbname=system.file("sql", "gcbd.sqlite", package="gcbd"))
 i7 <- dbGetQuery(dbcon, 'select * from benchmark where host="max" order by nobs')
 xeon <- dbGetQuery(dbcon, 'select * from benchmark where host="xeon_X5570" order by nobs')
@@ -443,12 +457,13 @@ D <- subset(i7[,-c(1:2,5)], type=="matmult")
 
 We present the benchmark results (which are also included in the \pkg{gcbd}
 package in the file \code{sql/gcbd.sqlite}).  We will show one type of
-benchmark per test architecture (currently: i7 or xeon) with times first
-shown on a regular scale (with the matrix dimension on the horizontal axis
-and the elapsed time in seconds on the vertical axis), and also with both
+benchmark per test architecture (currently one of i7 or xeon as detailed in
+section~\ref{subsec:hardware}) with times first shown on a regular scale (with
+the matrix dimension on the horizontal axis and the elapsed time in seconds
+on the vertical axis), and also in a so-called `log/log plot' with both
 matrix dimension and elapsed time on on a log-scale in order to better
-differentiate between alternatives.\footnote{I am grateful to Allan
-  Engelhardt for suggesting to switch from a plot with logged y-axis to
+differentiate between alternatives.\footnote{I am particularly grateful to
+  Allan Engelhardt for suggesting to switch from a plot with logged y-axis to
   a log-log plot.}
 
 \subsubsection{Matrix Multiplication: i7 with GPU}
@@ -456,160 +471,172 @@ differentiate between alternatives.\footnote{I am grateful to Allan
 \setkeys{Gin}{width=0.99\textwidth}
 \begin{figure}[H]
   \centering
-<<fig=TRUE,height=5.5,width=11>>=
+<<matmulti7,fig=TRUE,height=4.75,width=11>>=
 D <- subset(i7[,-c(1:2,5)], type=='matmult')
 op <- par(mfrow=c(1,2))
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=2, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication")
-legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=cols, lty=1)
+legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=cols, lty=1, lwd=2)
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=2, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="Matrix Multiplication", log="xy")
-legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=cols, lty=1)
+legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=cols, lty=1, lwd=2)
 par(op)
 @
 \caption{Matrix multiplications on i7 with GPU}
 \end{figure}
 
-It is immediately apparent that the reference BLAS underperform strongly. The
-single-threaded Atlas performance is also dominated by the multi-threaded
-BLAS (Goto, MKL) and the GPU-based gputools.  We also see (more clearly in
-logs) that the GPU-based solution bears a clear penalty for smaller
-dimensions and becomes close to being competetive with MKL and Goto without
-actually surpassing them on the chosen matrix sizes. We also see anedge for
-the Goto BLAS over the MKL.
+It is immediately apparent that the reference BLAS underperform very
+significantly. Similarlt, the single-threaded Atlas performance is also
+dominated by the multi-threaded BLAS (Atlas39, Goto, MKL) and the GPU-based
+gputools.
+
+We also see (especially in the log/log plot) that the GPU-based solution
+bears a clear penalty for smaller dimensions. It only crosses below the
+single-threaded Atlas around $N=1000$ and approached the best performing
+multi-threaded BLAS at the very end for $N=5000$.  On the other hand, it
+clearly exhibits a much slower slope implying a lesser time penalty as matrix
+sizes increases.
+
+The three multi-threaded BLAS implementations are essentially
+indistinguishable for this test.
 
 \subsubsection{Matrix Multiplication: Xeon}
 
 \begin{figure}[H]
   \centering
-<<fig=TRUE,height=5.5,width=11>>=
+<<matmultxeon,fig=TRUE,height=4.75,width=11>>=
 D <- subset(xeon[,-c(1:2,5)], type=='matmult')
 op <- par(mfrow=c(1,2))
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=2, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication")
-legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1)
+legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=2)
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=2, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="Matrix Multiplication", log="xy")
-legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1)
+legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=2)
 par(op)
 @
 \caption{Matrix multiplications on xeon}
 \end{figure}
 
-As above, reference BLAS underperform and single-threaded Atlas is dominated
-by multi-threaded BLAS.  This benchmark also offers a clearer differentiation
-between the multi-threaded BLAS with Goto again outperforming the Intel MKL.
-The Intel MKL is also seen as having an erratic
-performance for smaller matrix sizes. % which may call for redo.
+As above, the reference BLAS underperform significantly, and single-threaded
+Atlas is dominated by all multi-threaded BLAS implementation. On the other
+hand, on this platform the log/log plot offers a better differentitation
+between the multithreaded BLAS implementations. Goto is clearly ahead of its
+competitors. MKL shows slower slope and higher times for small sizes hinting
+and some suboptimal configuration.  Atlas39 beats MKL for essentially all
+sizes but cannot catch Goto BLAS' performances.
 
 
 \subsubsection{QR Decomposition: i7 with GPU}
 
 \begin{figure}[H]
   \centering
-<<fig=TRUE,height=5.5,width=11>>=
+<<qri7,fig=TRUE,height=4.75,width=11>>=
 D <- subset(i7[,-c(1:2,5)], type=='qr')
 op <- par(mfrow=c(1,2))
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=2, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition")
-legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=cols, lty=1)
+legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=cols, lty=1, lwd=2)
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=2, col=cols, log="xy",
         xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="QR Decomposition")
-legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=cols, lty=1)
+legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=cols, lty=1, lwd=2)
 par(op)
 @
 \caption{QR decomposition on i7 with GPU}
 \end{figure}
 
-This benchmarks offers a first glimpse at the potential for GPU computinmg. For
-matrix dimensions in excess of 1500 to 2000, the \pkg{gputools}-based
-solution dominates.  For this benchmark, the Intel MKL also outperformns the Goto BLAS.
-Reference BLAS and Atlas are both much closer to each other---and to the
-multi-threaded BLAS.
+As before, reference BLAS are behind all other implmentations. The
+single-threaded Atlas is on-par with the multi-threaded Atlas39---and the GPU
+solution. Goto and MKL beat all others, with Goto dominating overall.  The
+log/log plot once again illustrates the higher 'startup cost' of the GPU
+solution due to the communications cost being high (in relatively terms) for
+small matrices where the computations are still very fast.
 
 \subsubsection{QR Decomposition: Xeon}
 
 \begin{figure}[H]
   \centering
-<<fig=TRUE,height=5.5,width=11>>=
+<<qrxeon,fig=TRUE,height=4.75,width=11>>=
 D <- subset(xeon[,-c(1:2,5)], type=='qr')
 op <- par(mfrow=c(1,2))
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=2, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition")
-legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1)
+legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=2)
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=2, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="QR Decomposition", log="xy")
-legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1)
+legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=2)
 par(op)
 @
 \caption{QR decomposition on xeon}
 \end{figure}
 
-This benchmark indicates a possible error or bug in this version of the Goto
-library as it is somewhat surprisingly dominated by the reference BLAS and
-Atlas, as well as the MKL.  Otherwise, results are reasonably close as on the
-i7-based hardware platform shown above.
+Results fall basically into three groups. The Reference BLAS are behind
+everybody. A second group of both Atlas variants and MKL forms the middle
+with MKL having a slight edge over the Atlas libraries. However, Goto is
+ahead of everybody (yet shows a somewhat surprising non-linearity in the
+log/log plot).
 
 \subsubsection{SVD Decomposition: i7 with GPU}
 
 \begin{figure}[H]
   \centering
-<<fig=TRUE,height=5.5,width=11>>=
+<<svdi7,fig=TRUE,height=4.75,width=11>>=
 D <- subset(i7[,-c(1:2,5)], type=='svd')
 op <- par(mfrow=c(1,2))
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=2, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition")
-legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=cols, lty=1)
+legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=cols, lty=1, lwd=2)
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=2, col=cols, log="xy",
         xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="SVD Decomposition")
-legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=cols, lty=1)
+legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=cols, lty=1, lwd=2)
 par(op)
 @
-\caption{SVD decomposition on i7 with GPU}
+\caption{SVD on i7 with GPU}
 \end{figure}
 
-This outcome is similar to the earlier matrix crossproduct: the two
-multi-threaded BLAS are indistinguishable with possibly a small edge for the
-Goto BLAS. The GPU-based solution is becoming competitive for large matrix
-sizes.  Reference BLAS underperform significantly, and Atlas is again
-dominated by multi-threaded solutions.
+For the SVD, we have the familiar ordering of Reference BLAS behind
+single-threaded Atlas which is behind multi-threaded Atlas.  MKL, Goto and
+GPU are all competitive, with the GPU lagging for small sizes but beating all
+competitors for the largest matrix size tests.  In the log/log chart, the GPU
+performance also demonstrates a much slower slope, yet along with the much
+higher intercept.
 
-\subsubsection{SVD Decomposition: Xeon}
+\subsubsection{SVD: Xeon}
 
 \begin{figure}[H]
   \centering
-<<fig=TRUE,height=5.5,width=11>>=
+<<svdxeon,fig=TRUE,height=4.75,width=11>>=
 D <- subset(xeon[,-c(1:2,5)], type=='svd')
 op <- par(mfrow=c(1,2))
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=2, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition")
-legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1)
+legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=2)
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=2, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="SVD Decomposition", log="xy")
-legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1)
+legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=2)
 par(op)
 @
-\caption{SVD decomposition on xeon}
+\caption{SVD on xeon}
 \end{figure}
 
-On the Xeon, we see Goto BLAS once again dominate the MKL BLAS whose
-performance is seen as a little erratice. Both dominate Atlas which itself is
-clearly ahead of the reference implementation.
+On the Xeon, results are similar to the i7 with the main difference that the
+multi-threaded Atlas39 is closer to its competitors, in particular the
+MKL. Goto BLAS are once again ahead.
 
 
 \subsubsection{LU Decomposition: i7 with GPU}
 
 \begin{figure}[H]
   \centering
-<<fig=TRUE,height=5.5,width=11>>=
+<<lui7,fig=TRUE,height=4.75,width=11>>=
 D <- subset(i7[,-c(1:2,5)], type=='lu')
 op <- par(mfrow=c(1,2))
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=2, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds", main="LU Decomposition")
-legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1)
+legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=2)
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=2, col=cols, log="xy",
         xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="LU Decomposition")
-legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1)
+legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=2)
 par(op)
 @
 \caption{LU decomposition on i7 with GPU}
@@ -617,34 +644,96 @@ par(op)
 
 LU decomposition results, using the function from the \citep{cran:matrix}
 package, are similar to earlier results. Reference BLAS are by far the
-slowest, Atlas beats them clearly and loses equally clearly to the
-multi-threaded BLAS.  MKL performance is once again very similar to Goto for
-the LU decompostion.  For this algorithm, no GPU-based performance numbers
-are available as the current version of the \pkg{gputools} package does not
-provide a LU decomposition.
+slowest, single-threaded Atlas beats them clearly and loses equally clearly
+to the multi-threaded BLAS. Multi-threaded Atlas is very close to Goto and
+MKL, which are every so slightly ahead and essentially indistinguishable.
+For this algorithm, no GPU-based performance numbers are available as the
+current version of the \pkg{gputools} package does not provide a LU
+decomposition.
 
 
 \subsubsection{LU Decomposition: Xeon}
 
 \begin{figure}[H]
   \centering
-<<fig=TRUE,height=5.5,width=11>>=
+<<luxeon,fig=TRUE,height=4.75,width=11>>=
 D <- subset(xeon[,-c(1:2,5)], type=='lu')
 op <- par(mfrow=c(1,2))
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=2, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds", main="LU Decomposition")
-legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1)
+legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=2)
 matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=2, col=cols,
         xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="LU Decomposition", log="xy")
-legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1)
+legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=2)
 par(op)
 @
 \caption{LU decomposition on xeon}
 \end{figure}
 
-On the xeon chip we see a clearer separation between the two accelerated BLAS
-implementations with Goto having a clear edge over MKL. MKL actually fails to
-outperform the single-threaded Atlas library for smaller sizes.
+On the xeon chip we see once again a clearer separation between the three accelerated BLAS
+implementation on the one hand and the single-threaded Atlas and the
+Reference BLAS on the other hand.  Goto has a clear edge over MKL, which is
+also overtaken by Atlas39 for medium-to-large size matrices. MKL also
+exihibits some irregularity fir small-to-medium sized matrices.
+
+\subsubsection{Comparison}
+
+The charts shown above suggest a further analysis: a regression the logarithm
+of the elapsed times on the logarithm of the matrix dimension.  Rather than
+showing the results of the individual regressions, we have regrouped the
+different slope estimates in Figure~\ref{fig:slopeloglog}.
+
+\begin{figure}[H]
+  \centering
+<<loglogslopes,fig=TRUE,height=4.75,width=11>>=
+LL <- loglogAnalysis()
+DF <- LL[["slope"]]
+
+DF[,"method"] <- ordered(as.character(DF[,"method"]),
+                         levels=c("gpu", "goto", "mkl", "atl39", "atlas", "ref"))
+DF[,"type"] <- ordered(as.character(DF[,"type"]),
+                       levels=c("matmult", "qr", "svd", "lu"))
+
+sb <- trellis.par.get("strip.background")
+sb[["col"]][1] <- "lightgray"
+trellis.par.set("strip.background", sb)
+
+ss <- trellis.par.get("superpose.symbol")
+ss[["col"]][1:6] <- cols
+ss[["cex"]] <- rep(1.0, 7)
+ss[["pch"]] <- rep(19, 7)
+ss[["alpha"]] <- rep(0.75, 7)
+trellis.par.set("superpose.symbol", ss)
+
+print(dotplot(method  ~ value | type, group=host, data=DF,
+              xlab="Slope of elapsed times to matrix dimension in log/log chart",
+              key=simpleKey(text=c("i7","xeon"), space="bottom", column=2)))
+@
+\caption{Comparison of slopes in log/log analysis of BLAS performance}
+\label{fig:slopeloglog}
+\end{figure}
+
+These results re-confirm the rank-ordering seen in the individual charts
+above:
+\begin{itemize}
+\item Unsurprisingly, Reference BLAS are clearly dominated by all other
+  alternatives.
+\item Single-threaded Atlas is clearly improving on the Reference
+  BLAS but for most methods dominated by the other multi-threaded libraries and
+  the GPU-based solution with the QR decompostion as an exception where both Atlas
+  variants and the MKL are comparable and just behind Goto.
+\item Multi-threaded Atlas39 is roughly comparable to the MKL (and ahead for
+  matrix multiplication) and just behind Goto BLAS.
+\item The MKL Blas perform well, generally on-par with or ahead of Atlas39
+  but trailing Goto BLAS for two of the four algorithms.
+\item Goto BLAS are ahead for the QR and SVD tests, and on par or behind
+  for matrix multiplication and LU decompositions.
+\item GPU computing us see to have the lowest slope indicated the lowest cost
+  per additional matrix dimension increases---but this has to be balanced
+  with the cost for smaller to medium sizes which can be seen from the
+  corresponding analysis for intercepts (not shown but available in the
+  package).
+\end{itemize}
 
 \subsection{Magma: GPU and BLAS combined}
 
@@ -657,60 +746,60 @@ this potential is already realised with the early versions of Magma.
 
 % \begin{figure}[H]
 %   \centering
-% < <fig=TRUE,height=5.5,width=11> >=
+% < <fig=TRUE,height=4.75,width=11> >=
 % D <- subset(i7[,-c(1:2,5)], type=='matmult')
 % op <- par(mfrow=c(1,2))
 % matplot(x=D[,"nobs"], y=D[,c("atlas","magmaAtlas","gotob","magmaGoto", "mkl", "magmaMkl")],
 %         type='l', lty=1, lwd=2, col=paircols,
 %         xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication")
 % legend("topleft", legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
-%        bty="n", col=paircols, lty=1)
+%        bty="n", col=paircols, lty=1, lwd=2)
 % matplot(x=D[,"nobs"], y=D[,c("atlas","magmaAtlas","gotob","magmaGoto", "mkl", "magmaMkl")],
 %         type='l', lty=1, lwd=2, col=paircols, log="xy",
 %         xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="Matrix Multiplication")
 % legend("bottomright",
 %        legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
-%        bty="n", col=paircols, lty=1)
+%        bty="n", col=paircols, lty=1, lwd=2)
 % par(op)
 % @
 % \end{figure}
 
 % \begin{figure}[H]
 %   \centering
-% < <fig=TRUE,height=5.5,width=11 > >=
+% < <fig=TRUE,height=4.75,width=11 > >=
 % D <- subset(i7[,-c(1:2,5)], type=='qr')
 % op <- par(mfrow=c(1,2))
 % matplot(x=D[,"nobs"], y=D[,c("atlas","magmaAtlas","gotob","magmaGoto", "mkl", "magmaMkl")],
 %         type='l', lty=1, lwd=2, col=paircols,
 %         xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition")
 % legend("topleft", legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
-%        bty="n", col=paircols, lty=1)
+%        bty="n", col=paircols, lty=1, lwd=2)
 % matplot(x=D[,"nobs"], y=D[,c("atlas","magmaAtlas","gotob","magmaGoto", "mkl", "magmaMkl")],
 %         type='l', lty=1, lwd=2, col=paircols, log="xy",
 %         xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="QR Decomposition")
 % legend("bottomright",
 %        legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
-%        bty="n", col=paircols, lty=1)
+%        bty="n", col=paircols, lty=1, lwd=2)
 % par(op)
 % @
 % \end{figure}
 
 % \begin{figure}[H]
 %   \centering
-% < < fig=TRUE,height=5.5,width=11 > >=
+% < < fig=TRUE,height=4.75,width=11 > >=
 % D <- subset(i7[,-c(1:2,5)], type=='svd')
 % op <- par(mfrow=c(1,2))
 % matplot(x=D[,"nobs"], y=D[,c("atlas","magmaAtlas","gotob","magmaGoto", "mkl", "magmaMkl")],
 %         type='l', lty=1, lwd=2, col=paircols,
 %         xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition")
 % legend("topleft", legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
-%        bty="n", col=paircols, lty=1)
+%        bty="n", col=paircols, lty=1, lwd=2)
 % matplot(x=D[,"nobs"], y=D[,c("atlas","magmaAtlas","gotob","magmaGoto", "mkl", "magmaMkl")],
 %         type='l', lty=1, lwd=2, col=paircols, log="xy",
 %         xlab="Matrix dimension", ylab="Time in seconds (in logs)", main="SVD Decomposition")
 % legend("bottomright",
 %        legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
-%        bty="n", col=paircols, lty=1)
+%        bty="n", col=paircols, lty=1, lwd=2)
 % par(op)
 % @
 % \end{figure}
@@ -719,7 +808,7 @@ this potential is already realised with the early versions of Magma.
 
 % \begin{figure}[H]
 %   \centering
-% < < fig=TRUE,height=5.5,width=11 > >=
+% < < fig=TRUE,height=4.75,width=11 > >=
 % op <- par(mfrow=c(1,2))
 % D <- subset(i7[,-c(1:2,5)], type=='matmult')
 % N <- cbind(D[,"nobs"],
@@ -736,7 +825,7 @@ this potential is already realised with the early versions of Magma.
 %         main="Matrix Multiplication:\nRatio of Reference BLAS to given BLAS")
 % legend("bottomright",
 %        legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma", "GPU"),
-%        bty="n", col=paircols, lty=1)
+%        bty="n", col=paircols, lty=1, lwd=2)
 
 % D <- subset(i7[,-c(1:2,5)], type=='qr')
 % N <- cbind(D[,"nobs"],
@@ -753,14 +842,14 @@ this potential is already realised with the early versions of Magma.
 %         main="QR Decomposition:\nRatio of Reference BLAS to given BLAS")
 % legend("bottomright",
 %        legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma", "GPU"),
-%        bty="n", col=paircols, lty=1)
+%        bty="n", col=paircols, lty=1, lwd=2)
 % @
 % \end{figure}
 
 
 % \begin{figure}[H]
 %   \centering
-% < <fig=TRUE,height=5.5,width=11 > >=
+% < <fig=TRUE,height=4.75,width=11 > >=
 % op <- par(mfrow=c(1,2))
 % D <- subset(i7[,-c(1:2,5)], type=='svd')
 % N <- cbind(D[,"nobs"],
@@ -777,7 +866,7 @@ this potential is already realised with the early versions of Magma.
 %         main="SVD Decomposition:\nRatio of Reference BLAS to given BLAS")
 % legend("bottomright",
 %        legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma", "GPU"),
-%        bty="n", col=paircols, lty=1)
+%        bty="n", col=paircols, lty=1, lwd=2)
 
 % D <- subset(i7[,-c(1:2,5)], type=='lu' & nobs<=2000)
 % N <- cbind(D[,"nobs"],
@@ -794,7 +883,7 @@ this potential is already realised with the early versions of Magma.
 %         main="LU Decomposition:\nRatio of Reference BLAS to given BLAS")
 % legend("bottomright",
 %        legend=c("Atlas","Atlas/Magma", "Goto", "Goto/Magma", "MKL", "MKL/Magma"),
-%        bty="n", col=paircols, lty=1)
+%        bty="n", col=paircols, lty=1, lwd=2)
 % @
 % \end{figure}
 
@@ -802,7 +891,7 @@ this potential is already realised with the early versions of Magma.
 
 \begin{figure}[H]
   \centering
-<<fig=TRUE,height=5.5,width=11>>=
+<<magmammqr,fig=TRUE,height=4.75,width=11>>=
 op <- par(mfrow=c(1,2))
 D <- subset(i7[,-c(1:2,5)], type=='matmult')
 N <- cbind(D[,"nobs"],
@@ -815,7 +904,7 @@ matplot(x=D[,"nobs"], y=N[,-1],
         xlab="Matrix dimension", ylab="Magma performance relative to BLAS",
         main="Matrix Multiplication:\nRatio of BLAS to BLAS+Magma")
 legend("bottomright", legend=c("Atlas","Atl39","Goto", "MKL"),
-       bty="n", col=cols[-1], lty=1)
+       bty="n", col=cols[-1], lty=1, lwd=2)
 
 #D <- subset(i7[,-c(1:2,5)], type=='qr')
 N <- cbind(D[,"nobs"],
@@ -829,24 +918,32 @@ matplot(x=D[,"nobs"], y=N[,-1],
         xlab="Matrix dimension", ylab="Magma performance relative to BLAS",
         main="QR Decomposition:\nRatio of BLAS to BLAS+Magma")
 legend("bottomright", legend=c("Atlas","Atl39","Goto", "MKL"),
-       bty="n", col=cols[-1], lty=1)
+       bty="n", col=cols[-1], lty=1, lwd=2)
 @
 \caption{Matrix multiplication and QR decomposition with Magma}
 \end{figure}
 
 This chart illustrates a significant improvement for matrix multiplication in
-the case of the single-threaded Atlas libraries.  However, for the already
-multithreaded Goto and MKL BLAS, performance is approximately unchanged.
+the case of the single-threaded Atlas libraries.  As matrix size increases,
+the ratio increases and approaches 3.5 indicating a 3.5-times speedup for
+standard Atlas when combined with \pkg{magma}.  However, for the
+already-multithreaded BLAS, the opposite effect is realized: combined
+performance is actually \textsl{slower} in the hybrid case. This result seems
+invariant to the choice of multi-threaded BLAS as all three perform similarly
+poorly when combined with \pkg{magma}.  The other noteworthy effect is the
+variability of results as $N$ approaches 1000.
 
 Attempts to run a QR decomposition resulted in segmentation fault on the card
 used in these tests (Quadra FX 4800) once the matrix dimensions exceeded the
 (relatively modest) size of 64\footnote{The same library and operating system
   combination worked correctly on a newer card (Fermi C 1060) for Brian
   Smith (personal communication). However, we were unable to test on that platform.}
+This has been reported to the \pkg{Magma} development team; hopefully a
+future library version will allow these tests to be performed.
 
 \begin{figure}[H]
   \centering
-<<fig=TRUE,height=5.5,width=11>>=
+<<magmasvdlu,fig=TRUE,height=4.75,width=11>>=
 op <- par(mfrow=c(1,2))
 D <- subset(i7[,-c(1:2,5)], type=='svd')
 N <- cbind(D[,"nobs"],
@@ -859,7 +956,7 @@ matplot(x=D[,"nobs"], y=N[,-1],
         xlab="Matrix dimension", ylab="Magma performance relative to BLAS",
         main="SVD Decomposition:\nRatio of BLAS to BLAS+Magma")
 legend("bottomright", legend=c("Atlas", "Atl39", "Goto", "MKL"),
-       bty="n", col=cols[-1], lty=1)
+       bty="n", col=cols[-1], lty=1, lwd=2)
 
 D <- subset(i7[,-c(1:2,5)], type=='lu' & nobs<=2000)
 N <- cbind(D[,"nobs"],
@@ -873,20 +970,24 @@ matplot(x=N[,1], y=N[,-1],
         xlab="Matrix dimension", ylab="Magma oerformance relative to BLAS",
         main="LU Decomposition:\nRatio of BLAS to BLAS+Magma")
 legend("bottomright", legend=c("Atlas", "Atl39", "Goto", "MKL"),
-       bty="n", col=cols[-1], lty=1)
+       bty="n", col=cols[-1], lty=1, lwd=2)
 @
 \caption{SVD and LU decompositions with Magma}
 \end{figure}
 
-For the SVD decomposition, we see good initial gains for all three BLAS
-libraries tested along with Magma. However, once the matrix dimension
-increases performance becomes indistinguishable from a use of just the
-accelerated BLAS.
+For the SVD decomposition, we see strong variability for all four BLAS
+libraries tested along with Magma. An initial performance penalty (below
+$N=500$) gets outweighed by a performance gain up to $N=1000$. However, once
+the matrix dimension increases performance becomes indistinguishable from the
+use of just the accelerated BLAS.
 
 For LU decomposition, we experienced similar difficulties as for QR
 decomposition once the matrix dimension exceeded 2000.  For smaller matrices,
-results were promising for Atlas---similar to the case of matrix
-multiplication---and unimpressive for Goto and MKL.
+results were promising for the single-threaded Atlas---similar to the case of matrix
+multiplication---and unimpressive for Goto and MKL.  In all cases small sizes
+lead to performance penalties. For medium-sized matrices Atlas39 manages a
+ratio of just above 1.0 indicating a small gain.  The opposite is true for
+Goto and MKL.
 
 \section[Summary]{Summary}
 

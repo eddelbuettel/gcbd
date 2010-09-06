@@ -106,7 +106,7 @@ databaseResult <- function(data,dbfile=.dbfile) {
 
 }
 
-isPackageInstalled <- function(package, ...) { # Henrik Bengtsson, r-devel, 24 Aug 2010
+isPackageInstalled <- function(package) { 	# Henrik Bengtsson, r-devel, 24 Aug 2010
     path <- system.file(package=package)
     (path != "")
 }

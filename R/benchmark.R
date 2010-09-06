@@ -1,8 +1,8 @@
 
-hilbert <- function(n) {
-    i <- 1:n
-    1 / outer(i - 1, i, "+")
-}
+#hilbert <- function(n) {
+#    i <- 1:n
+#    1 / outer(i - 1, i, "+")
+#}
 
 getMatrix <- function(N) {
     a <- rnorm(N*N)

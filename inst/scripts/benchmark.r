@@ -40,6 +40,7 @@ if (verbose) {
 requirements()
 
 purgeAtlas()
+purgeAtlas39()
 purgeMKL()
 purgeGoto()
 

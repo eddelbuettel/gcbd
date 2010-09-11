@@ -41,6 +41,12 @@
   matrices to outperform multi-threaded BLAS.  Lastly, the hybrid approach
   that is being implemented by the Magma project is intriguing but exhibits
   problems with stability in its current version.
+
+  We also provide the framework for computing these benchmark results as the
+  corresponding \proglang{R} package \pkg{gcbd}. This enables other
+  researchers to compute similar benchmark results which could be the basis
+  for heuristics helping to select optimial computing strategies for a given
+  platform, library, problem and size combination.
 }
 
 \Keywords{BLAS, Atlas, Goto, MKL, GPU, \proglang{R}, Linux} %% at least one keyword must be supplied
@@ -123,7 +129,7 @@ manual \citep[appendix A.3.1]{RCore:InstAdmin}.
 Among the available BLAS implementations, several popular choices have
 emerged. Atlas (an acronym for \textsl{Automatically Tuned Linear Algebra
   System}) is popular as it has shown very good performance due to its
-automated and cpu-specific tuning \citep{Whaley_Dongarra:1999,
+automated and CPU-specific tuning \citep{Whaley_Dongarra:1999,
   Whaley_Petitet:2005}. It is also licensed in such a way that it permits
 redistribution leading to fairly wide availability of Atlas.\footnote{The
   Atlas FAQ lists Maple, Matlab and Mathematica as using Atlas, and
@@ -136,7 +142,7 @@ configuration, compilation and installation on the end-user.  Lastly, the
 Intel Math Kernel Library (MKL), a commercial product, also includes an
 optimised BLAS library.
 
-A recent addition to the toolchain of high-performance computing are
+A recent addition to the tool chain of high-performance computing are
 graphical processing units (GPUs).  Originally designed for optimised
 single-precision arithmetic to accelerate computing as performed by graphics
 cards, these devices are increasingly used in numerical analysis.  Earlier
@@ -172,7 +178,7 @@ before a summary concludes in section 5.
 
 \section{Background}
 
-Basic Linear Algrebra Subprograms (BLAS) provide an Application Programming
+Basic Linear Algebra Subprograms (BLAS) provide an Application Programming
 Interface (API) for linear algebra.  For a given task such as, say, a
 multiplication of two conformant matrices, an interface is described via a
 function declaration, in this case \code{sgemm} for single precision and
@@ -187,10 +193,10 @@ static linking, object code is taken from the underlying library and copied
 into the resulting executable.  This has several key implications. First, the
 executable becomes larger due to the copy of the binary code. Second, it
 makes it marginally faster as the library code is present and no additional
-lookup and subsequent redirection has to be performed. The actual amount of
+look-up and subsequent redirection has to be performed. The actual amount of
 this performance penalty is the subject of near-endless debate. We should
 also note that this usually amounts to only a small load-time penalty
-combined with a function pointer redirection---the actual compuation effort
+combined with a function pointer redirection---the actual computation effort
 is unchanged as the actual object code is identical. Third, it makes the program
 more robust as fewer external dependencies are required.  However, this last
 point also has a downside: no changes in the underlying library will be
@@ -247,7 +253,7 @@ The fifth available BLAS implementation is part of the Intel Math Kernel
 Library (MKL), a commercial product. However, Ubuntu release 9.10
 (``karmic'') contains a set of packages sponsored by Revolution Analytics
 which comprises version 10.2 (dated March 2009) of the Intel MKL in a setup
-directly useable by \proglang{R}. We use these packages here as a fifth set
+directly usable by \proglang{R}. We use these packages here as a fifth set
 of optimised BLAS.
 
 The first \proglang{R} extension for graphics-processing units has been implemented
@@ -255,7 +261,7 @@ by the \pkg{gputools} package \citep*{cran:gputools}. It provides a number of
 functions which use the GPU instead of the CPU which results in a significant
 performance increase for `large enough' problems.  Because data has to be transferred
 from the CPU to the GPU, a fixed cost in communications has to be borne by
-every invocation of the GPU.  For sizeable problems, this cost can be
+every invocation of the GPU.  For sizable problems, this cost can be
 outweighed by the benefits of the massively parallel GPU computation.
 Exactly where the indifference point lies beyond which GPU computing has an
 advantage is unfortunately dependent on the particular problem and algorithm
@@ -274,7 +280,7 @@ solvers based on these along with implementations of several BLAS function
 including \code{dgemm}, \code{dgemv}, and \code{dsymv} (and well as their
 single-precision counterparts).  Figure~\ref{fig:magma} illustrates the changes of
 relative workload between CPU and GPU when using Magma for a
-(single-precision) QR decompostion.  It clearly depicts how the share of the
+(single-precision) QR decomposition.  It clearly depicts how the share of the
 total computing effort that goes to the GPU increases as a function of the
 matrix size.
 
@@ -294,7 +300,7 @@ offers the first benchmark comparison of Magma versus BLAS implementations.
 Finally, an important, and possibly under-appreciated, topic is how to
 balance explicitly parallel code that distributes load across cores with
 multi-threaded BLAS.  Execution of Code may already be parallelised in a
-`coarse-grained' fashion across all local cores or cpus, maybe via tools that
+`coarse-grained' fashion across all local cores or CPUs, maybe via tools that
 explicitly spawn multiple threads, maybe via compiler-driven directives as
 for example with Open MP, or maybe via cluster-computing tools across a local
 network.  If such a setup `booked' all available cores, a key assumption of
@@ -391,7 +397,7 @@ the function from the \pkg{Matrix} package by \citet{cran:matrix}.
 \subsection{Benchmark script}
 
 The benchmark execution can then be triggered by the script
-\code{benchmark.r} in the subdirectory \code{scripts} of the \pkg{gcbd}
+\code{benchmark.r} in the sub-directory \code{scripts} of the \pkg{gcbd}
 package. It is implemented as an executable \proglang{R} script which uses the
 \pkg{getopt} package \citep{cran:getopt} for command-line parsing:
 
@@ -407,7 +413,7 @@ Usage: benchmark.r [-[-verbose|v]] [-[-help|h]] [-[-nobs|n] <integer>]
 \end{verbatim}
 
 Each benchmark experiment consists of $r$ runs for a matrix of size $n \times
-n$ observations using the chosen benchmark---matrix crossproduct or one of
+n$ observations using the chosen benchmark---matrix cross product or one of
 the QR, LU or SVD decompositions---over all five BLAS implementations and two
 GPU packages.  The run against the GPU packages is optional and dependent on
 the GPU packages being present.
@@ -432,7 +438,7 @@ paper but a possible avenue for future work.
 
 On platforms that do not have access to pre-built BLAS library packages, an
 alternative approach could consist of locally installing the different
-libraries into subdirectories of, say, \code{/opt/blas}. One could then use
+libraries into sub-directories of, say, \code{/opt/blas}. One could then use
 the environment variable \verb|LD_LIBRARY_PATH| to select one of these
 directories at a time.  However, such an approach places a larger burden on
 the user of the benchmarking software as she would have to download,
@@ -449,22 +455,22 @@ may generate different performance profiles.
 
 We have been running the results presented here on these two platforms:
 \begin{itemize}
-\item a four-core Intel i7 920, 2.67 GHz clockspeed, 8192kb cpu cache, 6 gb ram,
-  in hyperthreaded mode for eight visible cores, running Ubuntu 10.4 in 64-bit mode;
-\item a dual-cpu four-core Intel Xeon 5570, 2.96 Ghz clockspeed, 8192kb cpu
-  cache, 16gb ram, in hyperthreaded mode
+\item a four-core Intel i7 920, 2.67 GHz clock speed, 8192 kb CPU cache, 6 gb RAM,
+  in hyper-threaded mode for eight visible cores, running Ubuntu 10.4 in 64-bit mode;
+\item a dual-CPU four-core Intel Xeon 5570, 2.96 Ghz clock speed, 8192 kb CPU
+  cache, 16gb RAM, in hyper-threaded mode
   for sixteen visible cores, running Ubuntu 10.4 in 64-bit mode.
 \end{itemize}
 
 The i7 system also has a NVidia Quadro FX4800 GPU with 192 cores and 1.5 gb
-of memory. %This GPU card is
+of RAM. %This GPU card is
 %the only one we have tested the benchmarks against.
 
 Different hardware platforms could be reflected by other users installing the
 \pkg{gcbd} package on their system and reporting results back by supplying
 the resulting SQLite database files.
 
-The software configuration was held constant by runnning on 64-bit Ubuntu
+The software configuration was held constant by running on 64-bit Ubuntu
 10.4 in both cases.
 
 It should be noted that hyper-threading is a potential distraction. While it was
@@ -538,7 +544,7 @@ figure_MatMult_i7(i7)
 As above, the reference BLAS underperform significantly, and single-threaded
 Atlas is dominated by all multi-threaded BLAS implementation. On the other
 hand, on this platform the log/log plot offers a better differentiation
-between the multithreaded BLAS implementations. Goto is clearly ahead of its
+between the multi-threaded BLAS implementations. Goto is clearly ahead of its
 competitors. MKL shows a lower slope and higher times for small sizes hinting
 at some suboptimal configuration.  Atlas39 beats MKL for essentially all
 sizes but cannot catch Goto BLAS' performances.
@@ -643,7 +649,7 @@ On the xeon chip we see once again a clearer separation between the three accele
 implementations on the one hand and the single-threaded Atlas and the
 Reference BLAS on the other hand.  Goto has a clear edge over MKL, which is
 also overtaken by Atlas39 for medium-to-large size matrices. MKL also
-exihibits some irregularity for small-to-medium sized matrices.
+exhibits some irregularity for small-to-medium sized matrices.
 
 \subsubsection{Comparison}
 
@@ -665,7 +671,10 @@ C[,-c(1,2)] <- format(round(C[,-c(1,2)], digits=2))
     %\begin{tabular}{lrrrrrr}
       \toprule
       Platform & BLAS    & \multicolumn{2}{c}{Mat.Mult} & \multicolumn{2}{c}{QR} & \multicolumn{2}{c}{SVD}  & \multicolumn{2}{c}{LU} \\
-               &         & $\alpha$ & $\beta$           & $\alpha$ & $\beta$ & $\alpha$ & $\beta$  & $\alpha$ & $\beta$\\
+               &         & \multicolumn{1}{c}{$\alpha$} & \multicolumn{1}{c}{$\beta$}
+               & \multicolumn{1}{c}{$\alpha$} & \multicolumn{1}{c}{$\beta$}
+               & \multicolumn{1}{c}{$\alpha$} & \multicolumn{1}{c}{$\beta$}
+               & \multicolumn{1}{c}{$\alpha$} & \multicolumn{1}{c}{$\beta$} \\
       \cmidrule(r){3-4} \cmidrule(r){5-6} \cmidrule(r){7-8} \cmidrule(r){9-10}
       \\[2pt]
       \multicolumn{1}{r}{i7}
@@ -796,8 +805,8 @@ BLAS improves on the reference BLAS but loses to multi-threaded BLAS.
 
 For multi-threaded BLAS we find the Goto BLAS dominate the Intel MKL, with a
 single exception of the QR decomposition on the xeon-based system which may
-reveal an error. The development verson of Atlas, when compiled in
-multi-threaded mode is competetive with both Goto BLAS and the MKL.
+reveal an error. The development version of Atlas, when compiled in
+multi-threaded mode is competitive with both Goto BLAS and the MKL.
 
 GPU computing, when used in isolation, is found to be compelling only for
 very large matrix sizes.  However, a hybrid approach as suggested by Magma
@@ -806,11 +815,12 @@ field.  That said, the current implementation was seen to be not yet ready
 for wider use, at least not for the current library version and the hardware
 choice at our disposal.
 
-Our benchmarking framework can be employed by others through the \proglang{R}
-packaging system which could lead to a wider set of benchmark results. These
-results could be helpful for next-generation systems which may need to make
-heuristic choices about when to compute on the CPU and when to compute on the
-GPU. A strong empirical basis may make these heuristics more robust.
+Our benchmarking framework in the \pkg{gcbd} package can be employed by
+others through the \proglang{R} packaging system which could lead to a wider
+set of benchmark results. These results could be helpful for next-generation
+systems which may need to make heuristic choices about when to compute on the
+CPU and when to compute on the GPU. A strong empirical basis may make these
+heuristics more robust.
 
 \section*{Computational details}
 
@@ -824,7 +834,7 @@ The results in this paper were obtained using \proglang{R}
 \proglang{R} itself and all packages used are available from CRAN at
 \url{http://CRAN.R-project.org/}.
 
-The following Ubuntu packages were used to provide the differnt BLAS
+The following Ubuntu packages were used to provide the different BLAS
 implementations: \pkg{libblas} 1.2-build1, \pkg{liblapack3gf} 3.2.1-2,
 \pkg{libatlas3gf-base} 3.6.0-24ubuntu, \pkg{revolution-mkl} 3.0.0-1ubuntu1,
 (containing MKL 10.2 dated March 2009) and \pkg{gotoblas2} 1.13-1 which was
@@ -1024,3 +1034,5 @@ package and integration of REvolution R into Ubuntu 9.10.
 %        bty="n", col=paircols, lty=1, lwd=3)
 % @
 % \end{figure}
+
+% LocalWords:  cpus

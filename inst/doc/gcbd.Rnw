@@ -2,6 +2,7 @@
 %% use JSS class but for now with nojss option
 \documentclass[nojss,shortnames,article]{jss}
 \usepackage{float}
+\usepackage{booktabs}
 
 \author{Dirk Eddelbuettel\\Debian Project} % \And Second Author\\Plus Affiliation}
 \title{Benchmarking single- and multi-core BLAS implementations and GPUs for use with \proglang{R}}
@@ -85,25 +86,26 @@ library(gcbd)
 gcbd.version <- packageDescription("gcbd")$Version
 gcbd.date <- packageDescription("gcbd")$Date
 now.date <- strftime(Sys.Date(), "%B %d, %Y")
-# dput(brewer.pal(7, "Set1"))
-cols <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFF33", "#A65628")[-6]
-# dput(brewer.pal(8,"Paired"))
-paircols <- c("#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C", "#FB9A99", "#E31A1C", "#FDBF6F", "#FF7F00")
 # create figures/ if not present
 if ( ! (file.exists("figures") && file.info("figures")$isdir) ) dir.create("figures")
 @
 %
 
 Detailed comments and suggestions from Roger Bivand, Allan Engelhardt, Bryan
-Lewis, Junji Nakano, Mark Seligman, Brian Smith and Luke Tierney are very
-gratefully acknowledged. All remaining errors are mine.
+Lewis, James MacKinnon, Junji Nakano, Mark Seligman, Brian Smith and Luke
+Tierney are very gratefully acknowledged. All remaining errors are mine.
 
-This version corresponds to \pkg{gcbd} \Sexpr{gcbd.version} and was compiled
-on \Sexpr{now.date}.
+{
+  %% This block will disappaer in the JSS version
+  \vfill
+  This version corresponds to \pkg{gcbd} \Sexpr{gcbd.version} and was compiled
+  on \Sexpr{now.date}.
 
-\textbf{This is a draft version with possibly premature results. Please do
-  not circulate.}
+  \textbf{This is a draft version with possibly premature results. Please do
+    not circulate.}
 
+  \pagebreak
+}
 
 %\pagebreak
 \section[Introduction]{Introduction}
@@ -390,7 +392,7 @@ the function from the \pkg{Matrix} package by \citet{cran:matrix}.
 
 The benchmark execution can then be triggered by the script
 \code{benchmark.r} in the subdirectory \code{scripts} of the \pkg{gcbd}
-package. It is implemented an executable \proglang{R} script which uses the
+package. It is implemented as an executable \proglang{R} script which uses the
 \pkg{getopt} package \citep{cran:getopt} for command-line parsing:
 
 \begin{verbatim}
@@ -424,7 +426,7 @@ Using this script \code{benchmark.r}, users can collect benchmark results on
 their systems.  These could be used to aggregate more performance data which
 could then be used to estimate realistic performance numbers for a much wider
 variety of hardware configurations.  Doing so is beyond the scope of this
-paper but a possible venue for future work.
+paper but a possible avenue for future work.
 
 \subsection{Alternative implementation}
 
@@ -465,7 +467,7 @@ the resulting SQLite database files.
 The software configuration was held constant by runnning on 64-bit Ubuntu
 10.4 in both cases.
 
-It should be noted that hyper-threading is potential detraction. While it was
+It should be noted that hyper-threading is a potential distraction. While it was
 not possible to reconfigure the machines used here, it could be informative
 to compare results on identical hardware with hyper-threading turned on and
 off, respectively.
@@ -479,10 +481,8 @@ something similar on, say, OS X to measure the performance of the vecLib system.
 \section[Results]{Results}
 
 <<data,print=FALSE>>=
-dbcon <- dbConnect(dbDriver("SQLite"), dbname=system.file("sql", "gcbd.sqlite", package="gcbd"))
-i7 <- dbGetQuery(dbcon, 'select * from benchmark where host="max" order by nobs')
-xeon <- dbGetQuery(dbcon, 'select * from benchmark where host="xeon_X5570" order by nobs')
-invisible(dbDisconnect(dbcon))
+i7 <- getBenchmarkData("i7_920")
+xeon <- getBenchmarkData("xeon_X5570")
 D <- subset(i7[,-c(1:2,5)], type=="matmult")
 @
 
@@ -505,15 +505,7 @@ differentiate between alternatives.\footnote{I am particularly grateful to
 \begin{figure}[H]
   \centering
 <<matmulti7,fig=TRUE,height=5.25,width=11>>=
-D <- subset(i7[,-c(1:2,5)], type=='matmult')
-op <- par(mfrow=c(1,2))
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=3, col=cols,
-        xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication")
-legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=cols, lty=1, lwd=3)
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=3, col=cols,
-        xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication", log="xy")
-legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=cols, lty=1, lwd=3)
-par(op)
+figure_MatMult_i7(i7)
 @
 \caption{Matrix multiplications on i7 with GPU}
 \end{figure}
@@ -538,15 +530,7 @@ indistinguishable for this test and hardware platform.
 \begin{figure}[H]
   \centering
 <<matmultxeon,fig=TRUE,height=5.25,width=11>>=
-D <- subset(xeon[,-c(1:2,5)], type=='matmult')
-op <- par(mfrow=c(1,2))
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=3, col=cols,
-        xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication")
-legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=3)
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=3, col=cols,
-        xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication", log="xy")
-legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=3)
-par(op)
+figure_MatMult_i7(i7)
 @
 \caption{Matrix multiplications on xeon}
 \end{figure}
@@ -565,15 +549,7 @@ sizes but cannot catch Goto BLAS' performances.
 \begin{figure}[H]
   \centering
 <<qri7,fig=TRUE,height=5.25,width=11>>=
-D <- subset(i7[,-c(1:2,5)], type=='qr')
-op <- par(mfrow=c(1,2))
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=3, col=cols,
-        xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition")
-legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=cols, lty=1, lwd=3)
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=3, col=cols, log="xy",
-        xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition")
-legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=cols, lty=1, lwd=3)
-par(op)
+figure_QR_i7()
 @
 \caption{QR decomposition on i7 with GPU}
 \end{figure}
@@ -590,15 +566,7 @@ small matrices where the computations are still very fast.
 \begin{figure}[H]
   \centering
 <<qrxeon,fig=TRUE,height=5.25,width=11>>=
-D <- subset(xeon[,-c(1:2,5)], type=='qr')
-op <- par(mfrow=c(1,2))
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=3, col=cols,
-        xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition")
-legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=3)
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=3, col=cols,
-        xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition", log="xy")
-legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=3)
-par(op)
+figure_QR_xeon()
 @
 \caption{QR decomposition on xeon}
 \end{figure}
@@ -614,15 +582,7 @@ log/log plot).
 \begin{figure}[H]
   \centering
 <<svdi7,fig=TRUE,height=5.25,width=11>>=
-D <- subset(i7[,-c(1:2,5)], type=='svd')
-op <- par(mfrow=c(1,2))
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=3, col=cols,
-        xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition")
-legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=cols, lty=1, lwd=3)
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=3, col=cols, log="xy",
-        xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition")
-legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=cols, lty=1, lwd=3)
-par(op)
+figure_SVD_i7()
 @
 \caption{SVD on i7 with GPU}
 \end{figure}
@@ -639,15 +599,7 @@ higher intercept.
 \begin{figure}[H]
   \centering
 <<svdxeon,fig=TRUE,height=5.25,width=11>>=
-D <- subset(xeon[,-c(1:2,5)], type=='svd')
-op <- par(mfrow=c(1,2))
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=3, col=cols,
-        xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition")
-legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=3)
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=3, col=cols,
-        xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition", log="xy")
-legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=3)
-par(op)
+figure_SVD_xeon()
 @
 \caption{SVD on xeon}
 \end{figure}
@@ -662,15 +614,7 @@ MKL. Goto BLAS are once again ahead.
 \begin{figure}[H]
   \centering
 <<lui7,fig=TRUE,height=5.25,width=11>>=
-D <- subset(i7[,-c(1:2,5)], type=='lu')
-op <- par(mfrow=c(1,2))
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=3, col=cols,
-        xlab="Matrix dimension", ylab="Time in seconds", main="LU Decomposition")
-legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=3)
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=3, col=cols, log="xy",
-        xlab="Matrix dimension", ylab="Time in seconds", main="LU Decomposition")
-legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=3)
-par(op)
+figure_LU_i7()
 @
 \caption{LU decomposition on i7 with GPU}
 \end{figure}
@@ -690,15 +634,7 @@ provide a LU decomposition.
 \begin{figure}[H]
   \centering
 <<luxeon,fig=TRUE,height=5.25,width=11>>=
-D <- subset(xeon[,-c(1:2,5)], type=='lu')
-op <- par(mfrow=c(1,2))
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=3, col=cols,
-        xlab="Matrix dimension", ylab="Time in seconds", main="LU Decomposition")
-legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=3)
-matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=3, col=cols,
-        xlab="Matrix dimension", ylab="Time in seconds", main="LU Decomposition", log="xy")
-legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=cols, lty=1, lwd=3)
-par(op)
+figure_LU_xeon()
 @
 \caption{LU decomposition on xeon}
 \end{figure}
@@ -711,45 +647,53 @@ exihibits some irregularity for small-to-medium sized matrices.
 
 \subsubsection{Comparison}
 
-The charts shown above suggest a further analysis: a regression of the logarithm
-of the elapsed times on the logarithm of the matrix dimension.  Rather than
-showing the results of the individual regressions, we have regrouped the
-different slope estimates in Figure~\ref{fig:slopeloglog}.  Here a higher
-slope coefficient implies a higher increase in elapsed time per increase in
-matrix dimension, and moreover in a non-linear fashion as we have taken logarithms.
+The charts shown above suggest a further analysis: a regression of the
+logarithm of the elapsed times on the logarithm of the matrix dimension.
+These are shown in Table~\ref{tab:logloganalysis} below. For these results, a
+higher slope coefficient implies a higher increase in elapsed time per
+increase in matrix dimension, and moreover in a non-linear fashion as we have
+taken logarithms.
 
-\begin{figure}[H]
-  \centering
-<<loglogslopes,fig=TRUE,height=5.25,width=11>>=
-LL <- loglogAnalysis()
-DF <- LL[["slope"]]
-
-DF[,"method"] <- ordered(as.character(DF[,"method"]),
-                         levels=c("gpu", "goto", "mkl", "atl39", "atlas", "ref"))
-DF[,"type"] <- ordered(as.character(DF[,"type"]),
-                       levels=c("matmult", "qr", "svd", "lu"))
-
-sb <- trellis.par.get("strip.background")
-sb[["col"]][1] <- "lightgray"
-trellis.par.set("strip.background", sb)
-
-ss <- trellis.par.get("superpose.symbol")
-ss[["col"]][1:6] <- cols
-ss[["cex"]] <- rep(1.0, 7)
-ss[["pch"]] <- rep(19, 7)
-ss[["alpha"]] <- rep(0.75, 7)
-trellis.par.set("superpose.symbol", ss)
-
-print(dotplot(method  ~ value | type, group=host, data=DF,
-              xlab="Slope of elapsed times to matrix dimension in log/log chart",
-              key=simpleKey(text=c("i7","xeon"), space="bottom", column=2)))
+<<table,echo=FALSE,print=FALSE>>=
+C <- loglogAnalysis()[["coefs"]]
+C[,-c(1,2)] <- format(round(C[,-c(1,2)], digits=2))
 @
-\caption{Comparison of slopes in log/log analysis of BLAS performance}
-\label{fig:slopeloglog}
-\end{figure}
 
-These results formalise the rank-ordering of BLAS implementation seen in the
-analysis of the individual charts above.
+\begin{table}[H]
+  \begin{center}
+    \begin{tabular*}{0.975\textwidth}{@{\extracolsep{\fill}} l r rr rr rr rr rr}
+    %\begin{tabular}{lrrrrrr}
+      \toprule
+      Platform & BLAS    & \multicolumn{2}{c}{Mat.Mult} & \multicolumn{2}{c}{QR} & \multicolumn{2}{c}{SVD}  & \multicolumn{2}{c}{LU} \\
+               &         & $\alpha$ & $\beta$           & $\alpha$ & $\beta$ & $\alpha$ & $\beta$  & $\alpha$ & $\beta$\\
+      \cmidrule(r){3-4} \cmidrule(r){5-6} \cmidrule(r){7-8} \cmidrule(r){9-10}
+      \\[2pt]
+      \multicolumn{1}{r}{i7}
+               & Ref    & \Sexpr{C[2,3]} & \Sexpr{C[2,4]} & \Sexpr{C[3,3]} & \Sexpr{C[3,4]} & \Sexpr{C[4,3]} & \Sexpr{C[4,4]} & \Sexpr{C[1,3]} & \Sexpr{C[1,4]} \\
+               & Atlas  & \Sexpr{C[2,5]} & \Sexpr{C[2,6]} & \Sexpr{C[3,5]} & \Sexpr{C[3,6]} & \Sexpr{C[4,5]} & \Sexpr{C[4,6]} & \Sexpr{C[1,5]} & \Sexpr{C[1,6]} \\
+               & Atlas39& \Sexpr{C[2,7]} & \Sexpr{C[2,8]} & \Sexpr{C[3,7]} & \Sexpr{C[3,8]} & \Sexpr{C[4,7]} & \Sexpr{C[4,8]} & \Sexpr{C[1,7]} & \Sexpr{C[1,8]} \\
+               & Goto   & \Sexpr{C[2,9]} & \Sexpr{C[2,10]}& \Sexpr{C[3,9]} & \Sexpr{C[3,10]}& \Sexpr{C[4,9]} & \Sexpr{C[4,10]}& \Sexpr{C[1,9]} & \Sexpr{C[1,10]}\\
+               & MKL    & \Sexpr{C[2,11]}& \Sexpr{C[2,12]}& \Sexpr{C[3,11]}& \Sexpr{C[3,12]}& \Sexpr{C[4,11]}& \Sexpr{C[4,12]}& \Sexpr{C[1,11]}& \Sexpr{C[1,12]}\\
+               & GPU    & \Sexpr{C[2,13]}& \Sexpr{C[2,14]}& \Sexpr{C[3,13]}& \Sexpr{C[3,14]}& \Sexpr{C[4,13]}& \Sexpr{C[4,14]}& & \\[4pt]
+
+      \multicolumn{1}{r}{xeon}
+               & Ref    & \Sexpr{C[6,3]} & \Sexpr{C[6,4]} & \Sexpr{C[7,3]} & \Sexpr{C[7,4]} & \Sexpr{C[8,3]} & \Sexpr{C[8,4]} & \Sexpr{C[5,3]} & \Sexpr{C[5,4]} \\
+               & Atlas  & \Sexpr{C[6,5]} & \Sexpr{C[6,6]} & \Sexpr{C[7,5]} & \Sexpr{C[7,6]} & \Sexpr{C[8,5]} & \Sexpr{C[8,6]} & \Sexpr{C[5,5]} & \Sexpr{C[5,6]} \\
+               & Atlas39& \Sexpr{C[6,7]} & \Sexpr{C[6,8]} & \Sexpr{C[7,7]} & \Sexpr{C[7,8]} & \Sexpr{C[8,7]} & \Sexpr{C[8,8]} & \Sexpr{C[5,7]} & \Sexpr{C[5,8]} \\
+               & Goto   & \Sexpr{C[6,9]} & \Sexpr{C[6,10]}& \Sexpr{C[7,9]} & \Sexpr{C[7,10]}& \Sexpr{C[8,9]} & \Sexpr{C[8,10]}& \Sexpr{C[5,9]} & \Sexpr{C[5,10]}\\
+               & MKL    & \Sexpr{C[6,11]}& \Sexpr{C[6,12]}& \Sexpr{C[7,11]}& \Sexpr{C[7,12]}& \Sexpr{C[8,11]}& \Sexpr{C[8,12]}& \Sexpr{C[5,11]}& \Sexpr{C[5,12]}\\
+      \bottomrule
+    \end{tabular*}
+  \end{center}
+  \caption{Comparison of slopes and intercepts in log/log analysis of BLAS performance}
+  \label{tab:logloganalysis}
+\end{table}
+
+The results in Table~\ref{tab:logloganalysis} as well as the visualization of
+different slope estimates in Figure~\ref{fig:slopeloglog}, formalise the
+rank-ordering of BLAS implementation seen in the analysis of the individual
+charts above.
+
 \begin{itemize}
 \item Unsurprisingly, Reference BLAS are clearly dominated by all other
   alternatives and exhibits the increase in elapsed time per increase in
@@ -771,12 +715,170 @@ analysis of the individual charts above.
   package).
 \end{itemize}
 
+\begin{figure}[H]
+  \centering
+<<loglogslopes,fig=TRUE,height=5.25,width=11>>=
+figure_LogLogSlopes()
+@
+\caption{Comparison of slopes in log/log analysis of BLAS performance}
+\label{fig:slopeloglog}
+\end{figure}
+
+
 \subsection{Magma: GPU and BLAS combined}
 
 \pkg{Magma}, as a hybrid system comprising both CPU and GPU-based computing, has a
 lot of potential for improving over solutions using just one of the
 processing units. In this section we are trying to measure just how much of
 this potential is already realised with the early versions of Magma.
+
+\subsubsection{Performance of magma and BLAS relative to BLAS}
+
+\begin{figure}[H]
+  \centering
+<<magmammqr,fig=TRUE,height=5.25,width=11>>=
+figure_magma_MatMult_LU_i7()
+@
+\caption{Matrix multiplication and QR decomposition with Magma}
+\end{figure}
+
+This chart illustrates a significant improvement for matrix multiplication in
+the case of the single-threaded Atlas libraries.  As matrix size increases,
+the ratio increases and approaches 3.5 indicating a 3.5-times speedup for
+standard Atlas when combined with \pkg{magma}.  However, for the
+already-multithreaded BLAS, the opposite effect is realized: combined
+performance is actually \textsl{slower} in the hybrid case. This result seems
+invariant to the choice of multi-threaded BLAS as all three implementations perform similarly
+poorly when combined with \pkg{magma}.  The other noteworthy effect is the
+variability of results as $N$ approaches 1000.
+
+Attempts to run a QR decomposition resulted in segmentation fault on the card
+used in these tests (Quadro FX 4800) once the matrix dimensions exceeded the
+(relatively modest) size of 64.\footnote{The same library and operating
+  system combination worked correctly on a newer card (Fermi C 1060) for
+  Brian Smith (personal communication). However, we were unable to test on
+  that platform.}  This has been reported to the \pkg{Magma} development
+team; hopefully a future library version will allow these tests to be
+performed.
+
+\begin{figure}[H]
+  \centering
+<<magmasvdlu,fig=TRUE,height=5.25,width=11>>=
+figure_magma_MatMult_LU_xeon()
+@
+\caption{SVD and LU decompositions with Magma}
+\end{figure}
+
+For the SVD decomposition, we see strong variability for all four BLAS
+libraries tested along with Magma. An initial performance penalty (below
+$N=500$) gets outweighed by a performance gain up to $N=1000$. However, once
+the matrix dimension increases, performance becomes indistinguishable from the
+use of just the accelerated BLAS. We should note this case differs from the
+others as \pkg{Magma} has not yet implemented an algorithm for the SVD. In
+that sense, this test provides an illustration of the potential cost to naive
+users and it is in fact an acceptable result that the ratio generally
+approaches one.
+
+For LU decomposition, we experience similar difficulties as for QR
+decomposition once the matrix dimension exceeded 2000.  For smaller matrices,
+results are promising for the single-threaded Atlas---similar to the case of matrix
+multiplication---and unimpressive for Goto and MKL.  In all cases small sizes
+lead to performance penalties. For medium-sized matrices Atlas39 manages a
+ratio of just above 1.0 indicating a small gain.  The opposite is true for
+Goto and MKL.
+
+\section[Summary]{Summary}
+
+We present benchmarking results comparing five different BLAS implementations
+for four different matrix computations on two different hardware platforms.
+We find reference BLAS to be dominated in all cases. Single-threaded Atlas
+BLAS improves on the reference BLAS but loses to multi-threaded BLAS.
+
+For multi-threaded BLAS we find the Goto BLAS dominate the Intel MKL, with a
+single exception of the QR decomposition on the xeon-based system which may
+reveal an error. The development verson of Atlas, when compiled in
+multi-threaded mode is competetive with both Goto BLAS and the MKL.
+
+GPU computing, when used in isolation, is found to be compelling only for
+very large matrix sizes.  However, a hybrid approach as suggested by Magma
+\citep{Tomov_et_al:2009,Tomov_et_al:2010} has the potential to dominate the
+field.  That said, the current implementation was seen to be not yet ready
+for wider use, at least not for the current library version and the hardware
+choice at our disposal.
+
+Our benchmarking framework can be employed by others through the \proglang{R}
+packaging system which could lead to a wider set of benchmark results. These
+results could be helpful for next-generation systems which may need to make
+heuristic choices about when to compute on the CPU and when to compute on the
+GPU. A strong empirical basis may make these heuristics more robust.
+
+\section*{Computational details}
+
+The results in this paper were obtained using \proglang{R}
+\Sexpr{paste(R.Version()[6:7], collapse = ".")} with the packages
+\pkg{gputools} \Sexpr{gsub("-", "--", packageDescription("gputools")[["Version"]])},
+\pkg{magma} \Sexpr{gsub("-", "--", packageDescription("magma")[["Version"]])},
+\pkg{RSQLite} \Sexpr{gsub("-", "--", packageDescription("RSQLite")[["Version"]])},
+\pkg{DBI} \Sexpr{gsub("-", "--", packageDescription("DBI")[["Version"]])} and
+\pkg{getopt} \Sexpr{gsub("-", "--", packageDescription("getopt")[["Version"]])}.
+\proglang{R} itself and all packages used are available from CRAN at
+\url{http://CRAN.R-project.org/}.
+
+The following Ubuntu packages were used to provide the differnt BLAS
+implementations: \pkg{libblas} 1.2-build1, \pkg{liblapack3gf} 3.2.1-2,
+\pkg{libatlas3gf-base} 3.6.0-24ubuntu, \pkg{revolution-mkl} 3.0.0-1ubuntu1,
+(containing MKL 10.2 dated March 2009) and \pkg{gotoblas2} 1.13-1 which was
+built using \pkg{gotoblas2-helper} 0.1-12 by \citet{Nakama:2010}. Apart from
+\pkg{gotoblas2-helper} and \pkg{gotoblas2}, all these package are available
+via every Ubuntu mirror.
+
+\section*{Disclaimers}
+
+NVidia provided the Quadro FX 4800 GPU card  for evaluation / research
+purposes.  REvolution Computing (now Revolution Analytics) employed the
+author as a paid consultant for the creation of the \pkg{revolution-mkl}
+package and integration of REvolution R into Ubuntu 9.10.
+
+\bibliography{gcbd}
+
+\end{document}
+
+%% TODOs:
+%%
+%% Allan, Luke:  multithreaded Atlas, and tuned (Allan)
+%%
+%% Mark:  Please also mention memory as a factor in performance - e.g.,
+%%    cutoff point for the gpuLm() command differed between DDR2 and DDR3.
+%%
+%% Mark:  In the introduction to Magma, it may be worth pointing out that
+%%    the software dynamically selects the appropriate combination of hardware
+%%    to use, based on characteristics of the data.  This can be inferred
+%%    from Figure 1, but is not entirely obvious at first glance.
+%%
+%% Luke:  On QR you might be explicit which one you are using, LINPACK or
+%%    LAPACK.  Default in R is still LINPACK, which only uses level 1 BLAS
+%%    so won't see much benefit of fancy BLAS implementations.  LAPACK sees
+%%    more benefit I think.
+%%
+%% Luke:
+%%    In your magma comparisons are you comparing single/single or
+%%    double/double?  Also I assume in the plots above one means magma is
+%%    better (so it soind better on intermediate size matrices?) but that
+%%    could be more explicit.
+%%
+%% Dirk :)
+%%    Mention Debian blas convention, /etc/ld.so.conf.d/*conf
+%%    Think about table with raw data
+%%    Add regressions ...
+%%
+%% Allan
+%%   p. 9 - qr single threaded - your comment got me digging a little more
+%%   and, as best as I can read the source, the qr() function calls
+%%   .Fortran("dqrdc2", ...) [unless you use the LAPACK=TRUE argument] which
+%%   is provided not by BLAS but by R itself in src/appl/dqrdc2.f (not
+%%   src/extra/blas !)  This is a Ross Ihaka special; the original is
+%%   http://www.netlib.org/linpack/dqrdc.f (i.e. without the 2 at the end).
+
 
 % \subsubsection{Direct usage and comparison to BLAS}
 
@@ -922,202 +1024,3 @@ this potential is already realised with the early versions of Magma.
 %        bty="n", col=paircols, lty=1, lwd=3)
 % @
 % \end{figure}
-
-\subsubsection{Performance of magma and BLAS relative to BLAS}
-
-\begin{figure}[H]
-  \centering
-<<magmammqr,fig=TRUE,height=5.25,width=11>>=
-op <- par(mfrow=c(1,2))
-D <- subset(i7[,-c(1:2,5)], type=='matmult')
-N <- cbind(D[,"nobs"],
-           D[,"atlas"]/D[,"magmaAtlas"],
-           D[,"atl39"]/D[,"magmaAtl39"],
-           D[,"gotob"]/D[,"magmaGoto"],
-           D[,"mkl"]/D[,"magmaMkl"])
-matplot(x=D[,"nobs"], y=N[,-1],
-        type='l', lty=1, lwd=3, col=cols[-1], #pch=".",
-        xlab="Matrix dimension", ylab="Magma performance relative to BLAS",
-        main="Matrix Multiplication:\nRatio of BLAS to BLAS+Magma")
-legend("topright", legend=c("Atlas","Atl39","Goto", "MKL"),
-       bty="n", col=cols[-1], lty=1, lwd=3)
-
-#D <- subset(i7[,-c(1:2,5)], type=='qr')
-N <- cbind(D[,"nobs"],
-           D[,"atlas"]/D[,"magmaAtlas"],
-           D[,"atl39"]/D[,"magmaAtl39"],
-           D[,"gotob"]/D[,"magmaGoto"],
-           D[,"mkl"]/D[,"magmaMkl"])
-matplot(x=D[,"nobs"], y=N[,-1],
-        type='n',
-        lty=1, lwd=3, col=cols[-1], #pch=".",
-        xlab="Matrix dimension", ylab="Magma performance relative to BLAS",
-        main="QR Decomposition:\nRatio of BLAS to BLAS+Magma")
-legend("bottomright", legend=c("Atlas","Atl39","Goto", "MKL"),
-       bty="n", col=cols[-1], lty=1, lwd=3)
-@
-\caption{Matrix multiplication and QR decomposition with Magma}
-\end{figure}
-
-This chart illustrates a significant improvement for matrix multiplication in
-the case of the single-threaded Atlas libraries.  As matrix size increases,
-the ratio increases and approaches 3.5 indicating a 3.5-times speedup for
-standard Atlas when combined with \pkg{magma}.  However, for the
-already-multithreaded BLAS, the opposite effect is realized: combined
-performance is actually \textsl{slower} in the hybrid case. This result seems
-invariant to the choice of multi-threaded BLAS as all three implementations perform similarly
-poorly when combined with \pkg{magma}.  The other noteworthy effect is the
-variability of results as $N$ approaches 1000.
-
-Attempts to run a QR decomposition resulted in segmentation fault on the card
-used in these tests (Quadro FX 4800) once the matrix dimensions exceeded the
-(relatively modest) size of 64.\footnote{The same library and operating
-  system combination worked correctly on a newer card (Fermi C 1060) for
-  Brian Smith (personal communication). However, we were unable to test on
-  that platform.}  This has been reported to the \pkg{Magma} development
-team; hopefully a future library version will allow these tests to be
-performed.
-
-\begin{figure}[H]
-  \centering
-<<magmasvdlu,fig=TRUE,height=5.25,width=11>>=
-op <- par(mfrow=c(1,2))
-D <- subset(i7[,-c(1:2,5)], type=='svd')
-N <- cbind(D[,"nobs"],
-           D[,"atlas"]/D[,"magmaAtlas"],
-           D[,"atl39"]/D[,"magmaAtl39"],
-           D[,"gotob"]/D[,"magmaGoto"],
-           D[,"mkl"]/D[,"magmaMkl"])
-matplot(x=D[,"nobs"], y=N[,-1],
-        type='l', lty=1, lwd=3, col=cols[-1], #pch=".",
-        xlab="Matrix dimension", ylab="Magma performance relative to BLAS",
-        main="SVD Decomposition:\nRatio of BLAS to BLAS+Magma")
-legend("bottomright", legend=c("Atlas", "Atl39", "Goto", "MKL"),
-       bty="n", col=cols[-1], lty=1, lwd=3)
-
-D <- subset(i7[,-c(1:2,5)], type=='lu' & nobs<=2000)
-N <- cbind(D[,"nobs"],
-           D[,"atlas"]/D[,"magmaAtlas"],
-           D[,"atl39"]/D[,"magmaAtl39"],
-           D[,"gotob"]/D[,"magmaGoto"],
-           D[,"mkl"]/D[,"magmaMkl"])
-matplot(x=N[,1], y=N[,-1],
-        type='l', lty=1, lwd=3, col=cols[-1], #pch=".",
-        xlim=c(min(N[,1]), 4000),  # fill in for missing
-        xlab="Matrix dimension", ylab="Magma oerformance relative to BLAS",
-        main="LU Decomposition:\nRatio of BLAS to BLAS+Magma")
-legend("bottomright", legend=c("Atlas", "Atl39", "Goto", "MKL"),
-       bty="n", col=cols[-1], lty=1, lwd=3)
-@
-\caption{SVD and LU decompositions with Magma}
-\end{figure}
-
-For the SVD decomposition, we see strong variability for all four BLAS
-libraries tested along with Magma. An initial performance penalty (below
-$N=500$) gets outweighed by a performance gain up to $N=1000$. However, once
-the matrix dimension increases, performance becomes indistinguishable from the
-use of just the accelerated BLAS. We should note this case differs from the
-others as \pkg{Magma} has not yet implemented an algorithm for the SVD. In
-that sense, this test provides an illustration of the potential cost to naive
-users and it is in fact an acceptable result that the ratio generally
-approaches one.
-
-For LU decomposition, we experienced similar difficulties as for QR
-decomposition once the matrix dimension exceeded 2000.  For smaller matrices,
-results were promising for the single-threaded Atlas---similar to the case of matrix
-multiplication---and unimpressive for Goto and MKL.  In all cases small sizes
-lead to performance penalties. For medium-sized matrices Atlas39 manages a
-ratio of just above 1.0 indicating a small gain.  The opposite is true for
-Goto and MKL.
-
-\section[Summary]{Summary}
-
-We present benchmarking results comparing five different BLAS implementations
-for four different matrix computations on two different hardware platforms.
-We find reference BLAS to be dominated in all cases. Single-threaded Atlas
-BLAS improves on the reference BLAS but loses to multi-threaded BLAS.
-
-For multi-threaded BLAS we find the Goto BLAS dominate the Intel MKL, with a
-single exception of the QR decomposition on the xeon-based system which may
-reveal an error. The development verson of Atlas, when compiled in
-multi-threaded mode is competetive with both Goto BLAS and the MKL.
-
-GPU computing, when used is isolation, is found to be compelling only for
-very large matrix sizes.  However, a hybrid approach as suggested by Magma
-\citep{Tomov_et_al:2009,Tomov_et_al:2010} has the potential to dominate the
-field.  That said, the current implementation was seen to be not yet ready
-for wider use, at least not for the current library version and the hardware
-choice at our disposal.
-
-Our benchmarking framework can be employed by others through the \proglang{R}
-packaging system which could lead to a wider set of benchmark results. These
-results could be helpful for next-generation systems which may need to make
-heuristic choices about when to compute on the CPU and when to compute on the
-GPU. A strong empirical basis may make these heuristics more robust.
-
-\section*{Computational details}
-
-The results in this paper were obtained using \proglang{R}
-\Sexpr{paste(R.Version()[6:7], collapse = ".")} with the packages
-\pkg{gputools} \Sexpr{gsub("-", "--", packageDescription("gputools")$Version)},
-\pkg{magma} \Sexpr{gsub("-", "--", packageDescription("magma")$Version)},
-\pkg{RSQLite} \Sexpr{gsub("-", "--", packageDescription("RSQLite")$Version)},
-\pkg{DBI} \Sexpr{gsub("-", "--", packageDescription("DBI")$Version)} and
-\pkg{getopt} \Sexpr{gsub("-", "--", packageDescription("getopt")$Version)}.
-\proglang{R} itself and all packages used are available from CRAN at
-\url{http://CRAN.R-project.org/}.
-
-The following Ubuntu package were used to provide the differnt BLAS
-implementations: \pkg{libblas} 1.2-build1, \pkg{liblapack3gf} 3.2.1-2,
-\pkg{libatlas3gf-base} 3.6.0-24ubuntu, \pkg{revolution-mkl} 3.0.0-1ubuntu1,
-(containing MKL 10.2 dated March 2009) and \pkg{gotoblas2} 1.13-1 which was
-built using \pkg{gotoblas2-helper} 0.1-12 by \citet{Nakama:2010}. Apart from
-\pkg{gotoblas2-helper} and \pkg{gotoblas2}, all these package are available
-via every Ubuntu mirror.
-
-\section*{Disclaimers}
-
-NVidia provided the Quadro FX 4800 GPU card  for evaluation / research
-purposes.  REvolution Computing (now Revolution Analytics) employed the
-author as a paid consultant for the creation of the \pkg{revolution-mkl}
-package and integration of REvolution R into Ubuntu 9.10.
-
-\bibliography{gcbd}
-
-\end{document}
-
-%% TODOs:
-%%
-%% Allan, Luke:  multithreaded Atlas, and tuned (Allan)
-%%
-%% Mark:  Please also mention memory as a factor in performance - e.g.,
-%%    cutoff point for the gpuLm() command differed between DDR2 and DDR3.
-%%
-%% Mark:  In the introduction to Magma, it may be worth pointing out that
-%%    the software dynamically selects the appropriate combination of hardware
-%%    to use, based on characteristics of the data.  This can be inferred
-%%    from Figure 1, but is not entirely obvious at first glance.
-%%
-%% Luke:  On QR you might be explicit which one you are using, LINPACK or
-%%    LAPACK.  Default in R is still LINPACK, which only uses level 1 BLAS
-%%    so won't see much benefit of fancy BLAS implementations.  LAPACK sees
-%%    more benefit I think.
-%%
-%% Luke:
-%%    In your magma comparisons are you comparing single/single or
-%%    double/double?  Also I assume in the plots above one means magma is
-%%    better (so it soind better on intermediate size matrices?) but that
-%%    could be more explicit.
-%%
-%% Dirk :)
-%%    Mention Debian blas convention, /etc/ld.so.conf.d/*conf
-%%    Think about table with raw data
-%%    Add regressions ...
-%%
-%% Allan
-%%   p. 9 - qr single threaded - your comment got me digging a little more
-%%   and, as best as I can read the source, the qr() function calls
-%%   .Fortran("dqrdc2", ...) [unless you use the LAPACK=TRUE argument] which
-%%   is provided not by BLAS but by R itself in src/appl/dqrdc2.f (not
-%%   src/extra/blas !)  This is a Ross Ihaka special; the original is
-%%   http://www.netlib.org/linpack/dqrdc.f (i.e. without the 2 at the end).

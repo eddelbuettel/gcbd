@@ -122,7 +122,7 @@ Among the available BLAS implementations, several popular choices have
 emerged. Atlas (an acronym for \textsl{Automatically Tuned Linear Algebra
   System}) is popular as it has shown very good performance due to its
 automated and cpu-specific tuning \citep{Whaley_Dongarra:1999,
-  Whaley_Petitet:2005}. It is also licensed such that it permits
+  Whaley_Petitet:2005}. It is also licensed in such a way that it permits
 redistribution leading to fairly wide availability of Atlas.\footnote{The
   Atlas FAQ lists Maple, Matlab and Mathematica as using Atlas, and
   mentions that GSL, Octave, R, Scientific Python, and Scilab can be used with
@@ -289,6 +289,21 @@ A flexible and hybrid approach has the potential to improve upon solutions
 that use either the CPU or the GPU. To the best of our knowledge, this paper
 offers the first benchmark comparison of Magma versus BLAS implementations.
 
+Finally, an important, and possibly under-appreciated, topic is how to
+balance explicitly parallel code that distributes load across cores with
+multi-threaded BLAS.  Execution of Code may already be parallelised in a
+`coarse-grained' fashion across all local cores or cpus, maybe via tools that
+explicitly spawn multiple threads, maybe via compiler-driven directives as
+for example with Open MP, or maybe via cluster-computing tools across a local
+network.  If such a setup `booked' all available cores, a key assumption of
+multi-threaded BLAS no longer holds: other cores are not idle but as busy. In
+this case contention arises between the explicit parallelism and the implicit
+parallelism from the multi-threaded BLAS, and performance is bound to
+suffer. \citet{bivand2010} discusses this issues and provides several
+illustrations using examples from data-intensive GIS applications.  The
+simplest remedy is to withdraw one of the mechanisms for multi-threaded use by
+limiting the number of cores to one.
+
 \section{Implementation}
 
 \subsection{Requirements}
@@ -364,6 +379,12 @@ The benchmark functions can also be categorized:
   \end{itemize}
   for BLAS, \pkg{gputools} and \pkg{magma}, respectively.
 \end{itemize}
+
+For the QR decomposition, we set the flag \code{LAPACK=TRUE}. For
+\proglang{R}, the default QR operation is provided by LINPACK which uses
+level 1 BLAS operations where LAPACK can reap a larger benefit from
+accelerated or optimised BLAS libraries.  For the LU decompositions, we use
+the function from the \pkg{Matrix} package by \citet{cran:matrix}.
 
 \subsection{Benchmark script}
 

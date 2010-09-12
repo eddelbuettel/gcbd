@@ -1,6 +1,6 @@
 Package: gcbd
 Type: Package
-Title: GPU/CPU Benchmarking in .deb-based systems
+Title: GPU/CPU Benchmarking in Debian-based systems
 Version: 0.2.1
 Date: $Date$
 Author: Dirk Eddelbuettel
@@ -15,9 +15,10 @@ Description: GPU/CPU Benchmarking for Debian-package based system
  version supports
   - reference blas (refblas) which are unaccelerated as a baseline
   - Atlas which are tuned but typically configure single-threaded
+  - Atlas39 which are tuned and configured for multi-threaded mode
   - Goto Blas which are accelerated and multithreaded
   - Intel MKL which are a commercial accelerated and multithreaded version.
- As for GPU computing, we the CRAN packages
+ As for GPU computing, we use the CRAN packages
   - gputools
   - magma
  .

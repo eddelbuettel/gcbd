@@ -118,3 +118,11 @@ hasMagma <- function() {
 hasGputools <- function() {
     isPackageInstalled("gputools")
 }
+
+getBenchmarkData <- function(host) {
+    dbcon <- dbConnect(dbDriver("SQLite"), dbname=system.file("sql", "gcbd.sqlite", package="gcbd"))
+    data <- dbGetQuery(dbcon, paste('select * from benchmark where host="',
+                                    host, '" order by nobs', sep=""))
+    invisible(dbDisconnect(dbcon))
+    invisible(data)
+}

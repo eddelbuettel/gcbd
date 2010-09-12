@@ -14,6 +14,7 @@
 \alias{isPackageInstalled}
 \alias{hasGputools}
 \alias{hasMagma}
+\alias{getBenchmarkData}
 \title{Utility functions for GPU/CPU Benchmarking}
 \description{
   Utility functions for GPU/CPU Benchmarking
@@ -36,11 +37,15 @@
   isPackageInstalled(package)
   hasGputools()
   hasMagma()
+
+  getBenchmarkData(host)
 }
 \arguments{
   \item{data}{a (one-row) dataframe containing results from a benchmark}
   \item{dbfile}{character string containing path and name of SQLite database file}
   \item{package}{character string denoting a package to test for}
+  \item{host}{character string denoting the host system for which
+    benchmark data is to be retrieved}
 }
 \details{
   \code{requirements} checks for a few system requirements such platform
@@ -61,6 +66,8 @@
   of these CRAN package on the current machines -- as a very cheap proxy
   to testing whether the machine in GPU-capable or not. They use the
   function \code{isPackageInstalled} for this test.
- 
+
+  The function \code{getBenchmarkData} retrieves benchmark results for a
+  given host.
 }  
 \keyword{misc}

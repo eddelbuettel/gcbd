@@ -746,7 +746,7 @@ this potential is already realised with the early versions of Magma.
 \begin{figure}[H]
   \centering
 <<magmammqr,fig=TRUE,height=5.25,width=11>>=
-figure_magma_MatMult_LU_i7()
+figure_magma_MatMult_QR()
 @
 \caption{Matrix multiplication and QR decomposition with Magma}
 \end{figure}
@@ -773,7 +773,7 @@ performed.
 \begin{figure}[H]
   \centering
 <<magmasvdlu,fig=TRUE,height=5.25,width=11>>=
-figure_magma_MatMult_LU_xeon()
+figure_magma_SVD_LU()
 @
 \caption{SVD and LU decompositions with Magma}
 \end{figure}

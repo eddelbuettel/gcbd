@@ -1,8 +1,13 @@
+2010-09-11  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/figures.R: Place code to for vignette figures here
+	* man/figures.Rd: Documentation for the above
+
 2010-09-03  Dirk Eddelbuettel  <edd@debian.org>
 
 	* R/analysis.R: Analysis of log/log plot
 
-	* DESCRIPTION: Added Depends: on plyr and reshape
+	* DESCRIPTION: Added Depends: on plyr, reshape and lattice
 
 2010-09-02  Dirk Eddelbuettel  <edd@debian.org>
 

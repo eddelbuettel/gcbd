@@ -5,10 +5,11 @@ Version: 0.2.1
 Date: $Date$
 Author: Dirk Eddelbuettel
 Maintainer: Dirk Eddelbuettel <edd@debian.org>
-Description: GPU/CPU Benchmarking for Debian-package based system
+Description: GPU/CPU Benchmarking for Debian-package based systems
  This package benchmarks performance of a few standard linear algebra
- operations (such as a matrix product) across a number of different
- BLAS applications as well as available GPU implementations.
+ operations (such as a matrix product and QR, SVD and LU decompositions) 
+ across a number of different BLAS libraries as well as available GPU
+ implementations. 
  .
  To do so, it takes advantage of the ability to 'plug and play' different
  BLAS implementations easily on a Debian and/or Ubuntu system.  The current
@@ -28,6 +29,6 @@ License: GPL (>= 2)
 LazyLoad: yes
 Depends: R (>= 2.11.1), RSQLite, plyr, reshape, lattice
 Suggests: magma, gputools, Matrix
-SystemRequirements: Debian or Ubuntu system with access to Goto Blas and
- Intel MKL as well as Nvidia GPU with CUDA support
+SystemRequirements: Debian or Ubuntu system with access to Goto Blas, Intel
+ MKL, Atlas development build as well as a Nvidia GPU with CUDA support
 OS_type: unix

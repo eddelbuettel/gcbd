@@ -77,9 +77,9 @@
 
 \begin{document}
 \SweaveOpts{engine=R,eps=FALSE,echo=FALSE,prefix.string=figures/chart}
-%\VignetteIndexEntry{BLAS and GPU Benchmarking}
-%\VignetteDepends{gputools,magma
-%\VignetteKeywords{blas,gpu,atlas,mkl,goto}
+%\VignetteIndexEntry{BLAS and GPU Benchmarking for Use with R}
+%\VignetteDepends{gputools,magma}
+%\VignetteKeywords{blas,gpu,atlas,mkl,goto,R,Linux}
 %\VignettePackage{gcbd}
 
 \shortcites{Brodtkorb_et_al_2010,Blackford_et_al:2002,lapack}
@@ -97,23 +97,20 @@ if ( ! (file.exists("figures") && file.info("figures")$isdir) ) dir.create("figu
 @
 %
 
-Detailed comments and suggestions from Roger Bivand, Allan Engelhardt, Bryan
-Lewis, James MacKinnon, Junji Nakano, Mark Seligman, Brian Smith and Luke
-Tierney are very gratefully acknowledged. All remaining errors are mine.
 
-{
-  %% This block will disappaer in the JSS version
+\makeatletter
+\if@nojss
+  Detailed comments and suggestions from Roger Bivand, Allan Engelhardt, Bryan
+  Lewis, James MacKinnon, Junji Nakano, Mark Seligman, Brian Smith and Luke
+  Tierney are very gratefully acknowledged. All remaining errors are mine.
+
   \vfill
-  This version corresponds to \pkg{gcbd} \Sexpr{gcbd.version} and was compiled
-  on \Sexpr{now.date}.
+  This version corresponds to \pkg{gcbd} version \Sexpr{gcbd.version} and was
+  compiled on \Sexpr{now.date}.
+\fi
+\makeatother
 
-  \textbf{This is a draft version with possibly premature results. Please do
-    not circulate.}
-
-  \pagebreak
-}
-
-%\pagebreak
+\pagebreak
 \section[Introduction]{Introduction}
 
 Analysts are often eager to reap the maximum performance from their computing

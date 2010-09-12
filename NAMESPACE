@@ -1,0 +1,53 @@
+
+export(
+       ## benchmark.R
+       getMatrix,
+       getMagmaMatrix,
+       matmultBenchmark,
+       matmultBenchmarkgputools,
+       matmultBenchmarkmagma,
+       qrBenchmark,
+       qrBenchmarkgputools,
+       qrBenchmarkmagma,
+       svdBenchmark,
+       svdBenchmarkgputools,
+       svdBenchmarkmagma,
+       luBenchmark,
+       luBenchmarkgputools,
+       luBenchmarkmagma,
+       ##
+       ## utilities.R
+       requirements,
+       createDatabase,
+       databaseResult,
+       installAtlas,
+       installAtlas39,
+       installGoto,
+       installMKL,
+       purgeAtlas,
+       purgeAtlas39,
+       purgeGoto,
+       purgeMKL,
+       isPackageInstalled,
+       hasGputools,
+       hasMagma,
+       getBenchmarkData,
+       ##
+       ## analysis.R
+       loglogAnalysis,
+       ##
+       ## figures.R
+       figure_LogLogIntercept,
+       figure_LogLogSlopes,
+       figure_LU_i7,
+       figure_LU_xeon,
+       figure_MatMult_i7,
+       figure_MatMult_xeon,
+       figure_QR_i7,
+       figure_QR_xeon,
+       figure_SVD_i7,
+       figure_SVD_xeon,
+       figure_magma_MatMult_QR,
+       figure_magma_SVD_LU
+
+       )

@@ -1,3 +1,7 @@
+2010-09-12  Dirk Eddelbuettel  <edd@debian.org>
+
+	* NAMESPACE: Added, at last
+
 2010-09-11  Dirk Eddelbuettel  <edd@debian.org>
 
 	* R/figures.R: Place code to for vignette figures here

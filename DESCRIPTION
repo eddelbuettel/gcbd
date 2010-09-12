@@ -1,7 +1,7 @@
 Package: gcbd
 Type: Package
 Title: GPU/CPU Benchmarking in .deb-based systems
-Version: 0.2.0
+Version: 0.2.1
 Date: $Date$
 Author: Dirk Eddelbuettel
 Maintainer: Dirk Eddelbuettel <edd@debian.org>

@@ -10,8 +10,6 @@
 \alias{figure_QR_xeon}
 \alias{figure_SVD_i7}
 \alias{figure_SVD_xeon}
-\alias{figure_magma_MatMult_QR}
-\alias{figure_magma_SVD_LU}
 \title{Figures from the corresponding vignette}
 \description{
   These functions generate the figures the in the corresponding vignette.
@@ -28,8 +26,6 @@
   figure_QR_xeon(D)
   figure_SVD_i7(D)
   figure_SVD_xeon(D)
-  figure_magma_MatMult_QR(D)
-  figure_magma_SVD_LU(D)
 }
 \arguments{
   \item{D}{Benchmark results to be visualised}

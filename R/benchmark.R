@@ -12,12 +12,12 @@ getMatrix <- function(N) {
     invisible(a)
 }
 
-getMagmaMatrix <- function(N) {
-    a <- magma(rnorm(N*N), N, N)
-    #a <- magma( hilbert(N), N, N, gpu=TRUE)
-    invisible(gc())
-    invisible(a)
-}
+## getMagmaMatrix <- function(N) {
+##     a <- magma(rnorm(N*N), N, N)
+##     #a <- magma( hilbert(N), N, N, gpu=TRUE)
+##     invisible(gc())
+##     invisible(a)
+## }
 
 matmultBenchmark <- function(N, n, trim=0.1) {
     a <- getMatrix(N)
@@ -25,11 +25,11 @@ matmultBenchmark <- function(N, n, trim=0.1) {
     tmean <- mean(traw,trim=trim)
 }
 
-matmultBenchmarkmagma <- function(N, n, trim=0.1) {
-    a <- getMagmaMatrix(N)
-    traw <- replicate(n, system.time(crossprod(a))[3])
-    tmean <- mean(traw,trim=trim)
-}
+## matmultBenchmarkmagma <- function(N, n, trim=0.1) {
+##     a <- getMagmaMatrix(N)
+##     traw <- replicate(n, system.time(crossprod(a))[3])
+##     tmean <- mean(traw,trim=trim)
+## }
 
 matmultBenchmarkgputools <- function(N, n, trim=0.1) {
     a <- getMatrix(N)
@@ -43,11 +43,11 @@ qrBenchmark <- function(N, n, trim=0.1) {
     tmean <- mean(traw,trim=trim)
 }
 
-qrBenchmarkmagma <- function(N, n, trim=0.1) {
-    a <- getMagmaMatrix(N)
-    traw <- replicate(n, system.time(qr(a))[3])
-    tmean <- mean(traw,trim=trim)
-}
+## qrBenchmarkmagma <- function(N, n, trim=0.1) {
+##     a <- getMagmaMatrix(N)
+##     traw <- replicate(n, system.time(qr(a))[3])
+##     tmean <- mean(traw,trim=trim)
+## }
 
 qrBenchmarkgputools <- function(N, n, trim=0.1) {
     a <- getMatrix(N)
@@ -68,11 +68,11 @@ svdBenchmark <- function(N, n, trim=0.1) {
 #    tmean <- mean(traw,trim=trim)
 #}
 
-svdBenchmarkmagma <- function(N, n, trim=0.1) {
-    a <- getMagmaMatrix(N)
-    traw <- replicate(n, system.time(svd(a))[3])
-    tmean <- mean(traw,trim=trim)
-}
+## svdBenchmarkmagma <- function(N, n, trim=0.1) {
+##     a <- getMagmaMatrix(N)
+##     traw <- replicate(n, system.time(svd(a))[3])
+##     tmean <- mean(traw,trim=trim)
+## }
 
 svdBenchmarkgputools <- function(N, n, trim=0.1) {
     a <- getMatrix(N)
@@ -86,11 +86,11 @@ luBenchmark <- function(N, n, trim=0.1) {
     tmean <- mean(traw,trim=trim)
 }
 
-luBenchmarkmagma <- function(N, n, trim=0.1) {
-    a <- getMagmaMatrix(N)
-    traw <- replicate(n, system.time(lu(a))[3])
-    tmean <- mean(traw,trim=trim)
-}
+## luBenchmarkmagma <- function(N, n, trim=0.1) {
+##     a <- getMagmaMatrix(N)
+##     traw <- replicate(n, system.time(lu(a))[3])
+##     tmean <- mean(traw,trim=trim)
+## }
 
 luBenchmarkgputools <- function(N, n, trim=0.1) {
     NULL                                  # no LU in gputools

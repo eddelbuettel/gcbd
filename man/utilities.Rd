@@ -13,7 +13,6 @@
 \alias{purgeMKL}
 \alias{isPackageInstalled}
 \alias{hasGputools}
-\alias{hasMagma}
 \alias{getBenchmarkData}
 \title{Utility functions for GPU/CPU Benchmarking}
 \description{
@@ -36,7 +35,6 @@
 
   isPackageInstalled(package)
   hasGputools()
-  hasMagma()
 
   getBenchmarkData(host)
 }
@@ -62,10 +60,10 @@
   libraries to the system; the different \code{purge*} functions do the
   inverse operation and remove them.
 
-  The functions \code{hasGputools} and \code{hasMagma} test for presence
-  of these CRAN package on the current machines -- as a very cheap proxy
-  to testing whether the machine in GPU-capable or not. They use the
-  function \code{isPackageInstalled} for this test.
+  The function \code{hasGputools} tests for presence of this CRAN
+  package on the current machine -- as a very cheap proxy to testing
+  whether the machine in GPU-capable or not. It uses the function
+  \code{isPackageInstalled} for this test.
 
   The function \code{getBenchmarkData} retrieves benchmark results for a
   given host.

@@ -21,9 +21,9 @@
   development version of Atlas, configured for multi-threaded mode. Fourth is
   the optimised and multi-threaded Goto BLAS. Fifth is the multi-threaded
   BLAS contained in the commercial Intel MKL package. We also measure the
-  performance of two graphics processing units (GPU) based implementations
-  for \proglang{R} \citep{RCore:R} provided by the packages \pkg{gputools}
-  \citep{cran:gputools} and \pkg{magma} \citep{cran:magma}, a CPU/GPU hybrid.
+  performance of the graphics processing unit (GPU) based implementation
+  for \proglang{R} \citep{RCore:R} provided by the package \pkg{gputools}
+  \citep{cran:gputools}.
 
   Several frequently-used linear algebra computations are compared across
   BLAS (and LAPACK) implementations and via GPU computing: matrix
@@ -38,9 +38,7 @@
   BLAS when used on modern multi-core machines. Between the multi-threaded
   BLAS implementations, Goto is seen to have a slight advantage over MKL and
   Atlas.  GPU computing is showing promise but requires relatively large
-  matrices to outperform multi-threaded BLAS.  Lastly, the hybrid approach
-  that is being implemented by the Magma project is intriguing but exhibits
-  problems with stability in its current version.
+  matrices to outperform multi-threaded BLAS.
 
   We also provide the framework for computing these benchmark results as the
   corresponding \proglang{R} package \pkg{gcbd}. This enables other
@@ -291,8 +289,11 @@ matrix size.
 \end{figure}
 
 A flexible and hybrid approach has the potential to improve upon solutions
-that use either the CPU or the GPU. To the best of our knowledge, this paper
-offers the first benchmark comparison of Magma versus BLAS implementations.
+that use either the CPU or the GPU. However, the current version of the
+\pkg{Magma} library was exhibiting stability problems when used with GPU card
+employed (a Quadro FX48000). Analysing the performance of \pkg{Magma}
+relative to accelerated BLAS and other GPU-based approached is therefore left
+as topic for future research.
 
 Finally, an important, and possibly under-appreciated, topic is how to
 balance explicitly parallel code that distributes load across cores with
@@ -307,7 +308,11 @@ parallelism from the multi-threaded BLAS, and performance is bound to
 suffer. \citet{bivand2010} discusses this issues and provides several
 illustrations using examples from data-intensive GIS applications.  The
 simplest remedy is to withdraw one of the mechanisms for multi-threaded use by
-limiting the number of cores to one.
+limiting the number of cores to one.  This can be done for Goto BLAS using
+the \code{GOTO_NUM_THREADS} environment variable. For the MKL one can use the
+environment variable \code{OMP_NUM_THREADS} (of the underlying Open MP
+implementation), or the R function \code{setMKLthreads()} of the
+corresponding package.
 
 \section{Implementation}
 
@@ -359,7 +364,7 @@ utilities fall into several categories:
 \begin{itemize}
 \item initial feature detection via a function \code{requirements()} which asserts
   that a number of testable features of the host operating system are met;
-\item feature tests via functions \code{hasMagma()} and \code{hasGputools()}
+\item feature tests via the function \code{hasGputools()}
   allowing the benchmark script to bypass GPU-based tests in systems without
   a GPU;
 \item installation and removal functions which interface the package
@@ -731,67 +736,67 @@ figure_LogLogSlopes()
 \end{figure}
 
 
-\subsection{Magma: GPU and BLAS combined}
+% \subsection{Magma: GPU and BLAS combined}
 
-\pkg{Magma}, as a hybrid system comprising both CPU and GPU-based computing, has a
-lot of potential for improving over solutions using just one of the
-processing units. In this section we are trying to measure just how much of
-this potential is already realised with the early versions of Magma.
+% \pkg{Magma}, as a hybrid system comprising both CPU and GPU-based computing, has a
+% lot of potential for improving over solutions using just one of the
+% processing units. In this section we are trying to measure just how much of
+% this potential is already realised with the early versions of Magma.
 
-\subsubsection{Performance of magma and BLAS relative to BLAS}
+% \subsubsection{Performance of magma and BLAS relative to BLAS}
 
-\begin{figure}[H]
-  \centering
-<<magmammqr,fig=TRUE,height=5.25,width=11>>=
-figure_magma_MatMult_QR()
-@
-\caption{Matrix multiplication and QR decomposition with Magma}
-\end{figure}
+% \begin{figure}[H]
+%   \centering
+% < <magmammqr,fig=TRUE,height=5.25,width=11> >=
+% figure_magma_MatMult_QR()
+% @
+% \caption{Matrix multiplication and QR decomposition with Magma}
+% \end{figure}
 
-This chart illustrates a significant improvement for matrix multiplication in
-the case of the single-threaded Atlas libraries.  As matrix size increases,
-the ratio increases and approaches 3.5 indicating a 3.5-times speedup for
-standard Atlas when combined with \pkg{magma}.  However, for the
-already-multithreaded BLAS, the opposite effect is realized: combined
-performance is actually \textsl{slower} in the hybrid case. This result seems
-invariant to the choice of multi-threaded BLAS as all three implementations perform similarly
-poorly when combined with \pkg{magma}.  The other noteworthy effect is the
-variability of results as $N$ approaches 1000.
+% This chart illustrates a significant improvement for matrix multiplication in
+% the case of the single-threaded Atlas libraries.  As matrix size increases,
+% the ratio increases and approaches 3.5 indicating a 3.5-times speedup for
+% standard Atlas when combined with \pkg{magma}.  However, for the
+% already-multithreaded BLAS, the opposite effect is realized: combined
+% performance is actually \textsl{slower} in the hybrid case. This result seems
+% invariant to the choice of multi-threaded BLAS as all three implementations perform similarly
+% poorly when combined with \pkg{magma}.  The other noteworthy effect is the
+% variability of results as $N$ approaches 1000.
 
-Attempts to run a QR decomposition resulted in segmentation fault on the card
-used in these tests (Quadro FX 4800) once the matrix dimensions exceeded the
-(relatively modest) size of 64.\footnote{The same library and operating
-  system combination worked correctly on a newer card (Fermi C 1060) for
-  Brian Smith (personal communication). However, we were unable to test on
-  that platform.}  This has been reported to the \pkg{Magma} development
-team; hopefully a future library version will allow these tests to be
-performed.
+% Attempts to run a QR decomposition resulted in segmentation fault on the card
+% used in these tests (Quadro FX 4800) once the matrix dimensions exceeded the
+% (relatively modest) size of 64.\footnote{The same library and operating
+%   system combination worked correctly on a newer card (Fermi C 1060) for
+%   Brian Smith (personal communication). However, we were unable to test on
+%   that platform.}  This has been reported to the \pkg{Magma} development
+% team; hopefully a future library version will allow these tests to be
+% performed.
 
-\begin{figure}[H]
-  \centering
-<<magmasvdlu,fig=TRUE,height=5.25,width=11>>=
-figure_magma_SVD_LU()
-@
-\caption{SVD and LU decompositions with Magma}
-\end{figure}
+% \begin{figure}[H]
+%   \centering
+% < <magmasvdlu,fig=TRUE,height=5.25,width=11> >=
+% figure_magma_SVD_LU()
+% @
+% \caption{SVD and LU decompositions with Magma}
+% \end{figure}
 
-For the SVD decomposition, we see strong variability for all four BLAS
-libraries tested along with Magma. An initial performance penalty (below
-$N=500$) gets outweighed by a performance gain up to $N=1000$. However, once
-the matrix dimension increases, performance becomes indistinguishable from the
-use of just the accelerated BLAS. We should note this case differs from the
-others as \pkg{Magma} has not yet implemented an algorithm for the SVD. In
-that sense, this test provides an illustration of the potential cost to naive
-users and it is in fact an acceptable result that the ratio generally
-approaches one.
+% For the SVD decomposition, we see strong variability for all four BLAS
+% libraries tested along with Magma. An initial performance penalty (below
+% $N=500$) gets outweighed by a performance gain up to $N=1000$. However, once
+% the matrix dimension increases, performance becomes indistinguishable from the
+% use of just the accelerated BLAS. We should note this case differs from the
+% others as \pkg{Magma} has not yet implemented an algorithm for the SVD. In
+% that sense, this test provides an illustration of the potential cost to naive
+% users and it is in fact an acceptable result that the ratio generally
+% approaches one.
 
-For LU decomposition, we experience similar difficulties as for QR
-decomposition once the matrix dimension exceeded 2000.  For smaller matrices,
-results are promising for the single-threaded Atlas---similar to the case of matrix
-multiplication---and unimpressive for Goto and MKL.  In all cases small sizes
-lead to performance penalties. For medium-sized matrices Atlas39 manages a
-ratio of just above 1.0 indicating a small gain.  The opposite is true for
-Goto and MKL.
+% For LU decomposition, we experience similar difficulties as for QR
+% decomposition once the matrix dimension exceeded 2000.  For smaller matrices,
+% results are promising for the single-threaded Atlas---similar to the case of matrix
+% multiplication---and unimpressive for Goto and MKL.  In all cases small sizes
+% lead to performance penalties. For medium-sized matrices Atlas39 manages a
+% ratio of just above 1.0 indicating a small gain.  The opposite is true for
+% Goto and MKL.
 
 \section[Summary]{Summary}
 
@@ -804,13 +809,13 @@ For multi-threaded BLAS we find the Goto BLAS dominate the Intel MKL, with a
 single exception of the QR decomposition on the xeon-based system which may
 reveal an error. The development version of Atlas, when compiled in
 multi-threaded mode is competitive with both Goto BLAS and the MKL.
-
 GPU computing, when used in isolation, is found to be compelling only for
-very large matrix sizes.  However, a hybrid approach as suggested by Magma
-\citep{Tomov_et_al:2009,Tomov_et_al:2010} has the potential to dominate the
-field.  That said, the current implementation was seen to be not yet ready
-for wider use, at least not for the current library version and the hardware
-choice at our disposal.
+very large matrix sizes.
+%However, a hybrid approach as suggested by Magma
+%\citep{Tomov_et_al:2009,Tomov_et_al:2010} has the potential to dominate the
+%field.  That said, the current implementation was seen to be not yet ready
+%for wider use, at least not for the current library version and the hardware
+%choice at our disposal.
 
 Our benchmarking framework in the \pkg{gcbd} package can be employed by
 others through the \proglang{R} packaging system which could lead to a wider

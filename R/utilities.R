@@ -76,18 +76,12 @@ createDatabase <- function(dbfile=.dbfile) {
     dbi <- dbDriver("SQLite")
     dframe <- data.frame(host="", datum="",
                          type="", nobs=NA, nrun=NA,
-                         ref=NA,
-                         atlas=NA, magmaAtlas=NA,
-                         mkl=NA, magmaMkl=NA,
-                         gotob=NA, magmaGoto=NA,
-                         gpu=NA)
+                         ref=NA, atlas=NA, atl39=NA,
+                         mkl=NA, gotob=NA, gpu=NA)
     dftypes <- list(host="text", datum="text", type="text",
                     nobs="integer", nrun="integer",
-                    ref="real", atlas="real", magmaAtlas="real",
-                    atl39="real", magmaAtl39="real",
-                    mkl="real", magmaMkl="real",
-                    gotob="real", magmaGoto="real",
-                    gpu="real")
+                    ref="real", atlas="real", atl39="real",
+                    mkl="real", gotob="real", gpu="real")
     sql <- dbBuildTableDefinition(dbi, name="benchmark", value=dframe,
                                   field.types=dftypes, row.names=FALSE)
     dbcon <- dbConnect(dbDriver("SQLite"), dbname=dbfile)
@@ -111,9 +105,9 @@ isPackageInstalled <- function(package) { 	# Henrik Bengtsson, r-devel, 24 Aug 2
     (path != "")
 }
 
-hasMagma <- function() {
-    isPackageInstalled("magma")
-}
+#hasMagma <- function() {
+#    isPackageInstalled("magma")
+#}
 
 hasGputools <- function() {
     isPackageInstalled("gputools")

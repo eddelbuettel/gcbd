@@ -45,7 +45,7 @@ purgeMKL()
 purgeGoto()
 
 cmd      <- paste('r -lgcbd,Matrix   -e"cat(', benchmark, 'Benchmark(', N, ",", n, '))"', sep="")
-cmdmagma <- paste('r -lgcbd,magma    -e"cat(', benchmark, 'Benchmarkmagma(', N, ",", n, '))"', sep="")
+#cmdmagma <- paste('r -lgcbd,magma    -e"cat(', benchmark, 'Benchmarkmagma(', N, ",", n, '))"', sep="")
 cmdgpu   <- paste('r -lgcbd,gputools -e"cat(', benchmark, 'Benchmarkgputools(', N, ",", n, '))"', sep="")
 cmdtest  <- paste('r -lgcbd,Matrix   -e"cat(', benchmark, 'BenchmarkTEST(', N, ",", n, '))"', sep="")
 
@@ -53,33 +53,26 @@ ref <- as.numeric(system(cmd, intern=TRUE))
 
 installAtlas()
 atlas      <- as.numeric(system(cmd,      intern=TRUE))
-magmaAtlas <- ifelse( hasMagma(), as.numeric(system(cmdmagma, intern=TRUE)), NA)
 purgeAtlas()
 
 installAtlas39()
 atl39      <- as.numeric(system(cmd,      intern=TRUE))
-magmaAtl39 <- ifelse( hasMagma(), as.numeric(system(cmdmagma, intern=TRUE)), NA)
 purgeAtlas39()
 
 installMKL()
 mkl      <- as.numeric(system(cmd,      intern=TRUE))
-magmaMkl <- ifelse( hasMagma(), as.numeric(system(cmdmagma, intern=TRUE)), NA)
 purgeMKL()
 
 installGoto()
 goto      <- as.numeric(system(cmd,      intern=TRUE))
-magmaGoto <- ifelse( hasMagma(), as.numeric(system(cmdmagma, intern=TRUE)), NA)
+#magmaGoto <- ifelse( hasMagma(), as.numeric(system(cmdmagma, intern=TRUE)), NA)
 purgeGoto()
 
 gpu <- ifelse( hasGputools(), as.numeric(system(cmdgpu, intern=TRUE)), NA)
 
 res <- data.frame(type=benchmark, nobs=N, nrun=n,
-                  ref=ref,
-                  atlas=atlas, magmaAtlas=magmaAtlas,
-                  atl39=atl39, magmaAtl39=magmaAtl39,
-                  mkl=mkl, magmaMkl=magmaMkl,
-                  gotob=goto, magmaGoto=magmaGoto,
-                  gpu=gpu)
+                  ref=ref, atlas=atlas, atl39=atl39,
+                  mkl=mkl, gotob=goto, gpu=gpu)
 
 if (verbose) print(res)
 databaseResult(res)

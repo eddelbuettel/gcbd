@@ -1,3 +1,13 @@
+2010-09-14  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Version 0.2.2
+
+2010-09-13  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/*R: Remove magma tests code for now
+	* man.*Rd: Updated documentation
+	* inst/doc/gcbd.Rnw: Updated accordingly
+
 2010-09-12  Dirk Eddelbuettel  <edd@debian.org>
 
 	* NAMESPACE: Added, at last
@@ -11,6 +21,7 @@
 
 	* R/analysis.R: Analysis of log/log plot
 
+	* DESCRIPTION: Version 0.2.1
 	* DESCRIPTION: Added Depends: on plyr, reshape and lattice
 
 2010-09-02  Dirk Eddelbuettel  <edd@debian.org>

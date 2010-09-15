@@ -21,7 +21,7 @@
   development version of Atlas, configured for multi-threaded mode. Fourth is
   the optimised and multi-threaded Goto BLAS. Fifth is the multi-threaded
   BLAS contained in the commercial Intel MKL package. We also measure the
-  performance of the graphics processing unit (GPU) based implementation
+  performance of a graphics processing unit (GPU) based implementation
   for \proglang{R} \citep{RCore:R} provided by the package \pkg{gputools}
   \citep{cran:gputools}.
 
@@ -41,7 +41,7 @@
   matrices to outperform multi-threaded BLAS.
 
   We also provide the framework for computing these benchmark results as the
-  corresponding \proglang{R} package \pkg{gcbd}. This enables other
+  corresponding \proglang{R} package \pkg{gcbd}. It enables other
   researchers to compute similar benchmark results which could be the basis
   for heuristics helping to select optimial computing strategies for a given
   platform, library, problem and size combination.
@@ -104,7 +104,7 @@ if ( ! (file.exists("figures") && file.info("figures")$isdir) ) dir.create("figu
 
   \vfill
   This version corresponds to \pkg{gcbd} version \Sexpr{gcbd.version} and was
-  compiled on \Sexpr{now.date}.
+  typeset on \Sexpr{now.date}.
 \fi
 \makeatother
 
@@ -141,7 +141,7 @@ A recent addition to the tool chain of high-performance computing are
 graphical processing units (GPUs).  Originally designed for optimised
 single-precision arithmetic to accelerate computing as performed by graphics
 cards, these devices are increasingly used in numerical analysis.  Earlier
-criticism of insufficient floating-point precisions or severe performance
+criticism of insufficient floating-point precision or severe performance
 penalties for double-precision calculation are being addressed by the newest
 models. Dependence on particular vendors remains a concern with NVidia's CUDA
 toolkit \citep{nVidia:2010} currently still the preferred development choice
@@ -151,8 +151,8 @@ generic alternative that is independent of hardware vendors.
 
 But what has been lacking is a comparison of the effective performance of these
 alternatives.  This paper works towards answering this question.  By analysing
-performance across five different BLAS implementations---as well as two
-GPU-based solutions---we are able to provide a reasonably broad comparison.
+performance across five different BLAS implementations---as well as a
+GPU-based solution---we are able to provide a reasonably broad comparison.
 
 Performance is measured as an end-user would experience it: we record
 computing times from launching commands in the interactive \proglang{R}
@@ -231,36 +231,41 @@ compiled.\footnote{A critical change enabling multi-threaded mode which we
   future Debian / Ubuntu packages.} We will refer to the second variant as
 `Atlas39' and `Atl39' when we report results below.
 
-The fourth BLAS implementation is provided by the Goto BLAS. Upon the required
-user registration, these are freely available from the University of Texas,
-albeit under a license that prohibits redistribution.  This prevents
+The fourth BLAS implementation is provided by the Goto BLAS. Upon the
+required user registration, these are freely available from the University of
+Texas, albeit under a license that prohibits redistribution.  This prevents
 inclusion into popular Linux distributions, a clear disadvantage for easy
 installation and de-installation.  However, the contributed Debian repository
 at the Institute of Statistical Mathematics in Japan provides a `helper
-package' \citep{nakano_nakama:2009} which, given the required registration
-information, downloads the source code from the University of Texas site, and
-then configures and compiles the Goto BLAS in such a manner that a local
-binary Debian package is produced---which is also optimised for the local
-installation.  This permits us to use the Goto BLAS via the resulting package
-as a fourth BLAS alternative.
+package' \citep{nakano_nakama:2009,Nakama:2010} which, given the required
+registration information, downloads the source code from the University of
+Texas site, and then configures and compiles the Goto BLAS in such a manner
+that a local binary Debian package is produced---which is also optimised for
+the local installation.  This permits us to use the Goto BLAS via the
+resulting package as a fourth BLAS alternative.
 
 The fifth available BLAS implementation is part of the Intel Math Kernel
 Library (MKL), a commercial product. However, Ubuntu release 9.10
 (``karmic'') contains a set of packages sponsored by Revolution Analytics
 which comprises version 10.2 (dated March 2009) of the Intel MKL in a setup
-directly usable by \proglang{R}. We use these packages here as a fifth set
-of optimised BLAS.
+directly usable by \proglang{R}. We use these packages here as a fifth set of
+optimised BLAS.  The AMD Core Math Library (AMCL) could provide a sixth' BLAS
+variant. However, given that Intel is currently not truly challenged by AMD
+for high-performance CPU, we considered analysing the Intel MKL to be a
+sufficient representation of the vendor BLAS market.
 
-The first \proglang{R} extension for graphics-processing units has been implemented
-by the \pkg{gputools} package \citep*{cran:gputools}. It provides a number of
-functions which use the GPU instead of the CPU which results in a significant
-performance increase for `large enough' problems.  Because data has to be transferred
-from the CPU to the GPU, a fixed cost in communications has to be borne by
-every invocation of the GPU.  For sizable problems, this cost can be
-outweighed by the benefits of the massively parallel GPU computation.
-Exactly where the indifference point lies beyond which GPU computing has an
-advantage is unfortunately dependent on the particular problem and algorithm
-as well as the given hardware and software combination.
+The first \proglang{R} extension for graphics-processing units has been
+implemented by the \pkg{gputools} package \citep*{cran:gputools}. It provides
+a number of functions which use the GPU instead of the CPU. This can provide
+a significant performance increase for `large enough' problems due a the
+large number of cores---from several dozen to several hundred on newer
+cards---on a GPU. However, because data has to be transferred from the CPU to
+the GPU, a fixed cost in communications has to be borne by every invocation
+of the GPU.  For sizable problems, this cost can be outweighed by the
+benefits of the massively parallel GPU computation.  Exactly where the
+indifference point lies beyond which GPU computing has an advantage is
+unfortunately dependent on the particular problem and algorithm as well as
+the given hardware and software combination.
 
 A recent addition to the set of \proglang{R} packages is \pkg{magma}
 \citep{cran:magma} which interfaces the \pkg{Magma} library project of the
@@ -297,12 +302,12 @@ as topic for future research.
 
 Finally, an important, and possibly under-appreciated, topic is how to
 balance explicitly parallel code that distributes load across cores with
-multi-threaded BLAS.  Execution of Code may already be parallelised in a
+multi-threaded BLAS.  Execution of code may already be parallelised in a
 `coarse-grained' fashion across all local cores or CPUs, maybe via tools that
 explicitly spawn multiple threads, maybe via compiler-driven directives as
 for example with Open MP, or maybe via cluster-computing tools across a local
 network.  If such a setup `booked' all available cores, a key assumption of
-multi-threaded BLAS no longer holds: other cores are not idle but as busy. In
+multi-threaded BLAS no longer holds: other cores are not idle but also busy. In
 this case contention arises between the explicit parallelism and the implicit
 parallelism from the multi-threaded BLAS, and performance is bound to
 suffer. \citet{bivand2010} discusses this issues and provides several
@@ -312,7 +317,8 @@ limiting the number of cores to one.  This can be done for Goto BLAS using
 the \code{GOTO_NUM_THREADS} environment variable. For the MKL one can use the
 environment variable \code{OMP_NUM_THREADS} (of the underlying Open MP
 implementation), or the R function \code{setMKLthreads()} of the
-corresponding package.
+corresponding package. Atlas, on the other hand, fixes the number of cores
+used at compile-time and cannot vary this setting at run-time.
 
 \section{Implementation}
 
@@ -343,10 +349,10 @@ Debian, it also works perfectly on the Ubuntu systems used here.\footnote{The
   \texttt{/etc/init.d/gotoblas2-helper} script required one change from
   \texttt{/bin/sh} to \texttt{/bin/bash}.}
 
-For GPU-based testing we require the \proglang{R} packages \pkg{gputools} and
-\pkg{magma} which in turn require support for CUDA and the NVidia SDK (as
+For GPU-based testing we require the \proglang{R} package \pkg{gputools}
+which in turn requires support for CUDA and the NVidia SDK (as
 well as appropriate NVidia hardware). Detailed installation instructions are
-provided by either package so we will defer to these and assume that the
+provided by the package so we will defer to these and assume that the
 packages are in fact installed.  Helper scripts in our package will then
 verify this availability while the benchmark is executed.
 
@@ -368,7 +374,7 @@ utilities fall into several categories:
   allowing the benchmark script to bypass GPU-based tests in systems without
   a GPU;
 \item installation and removal functions which interface the package
-  management layer and install (or remove) the Atlas, MKL or Goto BLAS
+  management layer and install (or remove) the Atlas, Atlas39, MKL or Goto BLAS
   packages, respectively, which helps ensure that at any one point in time
   only one accelerated BLAS library package is present;
 \item database creation where the results database (and table schema) is
@@ -378,8 +384,7 @@ utilities fall into several categories:
 
 The benchmark functions can also be categorized:
 \begin{itemize}
-\item creation of random data for standard \pkg{Matrix} or \pkg{magma}
-  objects, respectively;
+\item creation of random data for standard \pkg{Matrix} objects;
 \item actual benchmarking code for
   \begin{itemize}
   \item matrix crossproducts;
@@ -387,7 +392,7 @@ The benchmark functions can also be categorized:
   \item QR decomposition;
   \item LU decomposition;
   \end{itemize}
-  for BLAS, \pkg{gputools} and \pkg{magma}, respectively.
+  for BLAS and \pkg{gputools}, respectively.
 \end{itemize}
 
 For the QR decomposition, we set the flag \code{LAPACK=TRUE}. For
@@ -411,14 +416,14 @@ Usage: benchmark.r [-[-verbose|v]] [-[-help|h]] [-[-nobs|n] <integer>]
     -h|--help         help on options
     -n|--nobs         number of rows and columns in matrix, default is 250
     -r|--runs         number of benchmark runs, default is 30
-    -b|--benchmark    benchmark to run (matmult, qr, svd, lu), default is matmult
+    -b|--benchmark    benchmark to run (matmult [default], qr, svd, lu)
 \end{verbatim}
 
 Each benchmark experiment consists of $r$ runs for a matrix of size $n \times
 n$ observations using the chosen benchmark---matrix cross product or one of
-the QR, LU or SVD decompositions---over all five BLAS implementations and two
-GPU packages.  The run against the GPU packages is optional and dependent on
-the GPU packages being present.
+the QR, LU or SVD decompositions---over all five BLAS implementations and the
+GPU package.  The run against the GPU package is optional and dependent on
+the GPU package being present.
 
 At the end of each benchmark experiment, the results are appended to a SQLite
 database.
@@ -465,8 +470,9 @@ We have been running the results presented here on these two platforms:
 \end{itemize}
 
 The i7 system also has a NVidia Quadro FX4800 GPU with 192 cores and 1.5 gb
-of RAM. %This GPU card is
-%the only one we have tested the benchmarks against.
+of RAM. This card has a so-called `compute-number' of 1.3 whereas newer models
+(`Fermi') have a compute number of 2.0 signalling the availability of more
+hardware capabilities.
 
 Different hardware platforms could be reflected by other users installing the
 \pkg{gcbd} package on their system and reporting results back by supplying
@@ -544,7 +550,7 @@ figure_MatMult_i7(i7)
 \end{figure}
 
 As above, the reference BLAS underperform significantly, and single-threaded
-Atlas is dominated by all multi-threaded BLAS implementation. On the other
+Atlas is dominated by all multi-threaded BLAS implementations. On the other
 hand, on this platform the log/log plot offers a better differentiation
 between the multi-threaded BLAS implementations. Goto is clearly ahead of its
 competitors. MKL shows a lower slope and higher times for small sizes hinting
@@ -696,7 +702,7 @@ C[,-c(1,2)] <- format(round(C[,-c(1,2)], digits=2))
       \bottomrule
     \end{tabular*}
   \end{center}
-  \caption{Comparison of slopes and intercepts in log/log analysis of BLAS performance}
+  \caption{Comparison of intercepts $\alpha$ and slopes $\beta$ in log/log analysis of BLAS performance}
   \label{tab:logloganalysis}
 \end{table}
 
@@ -707,10 +713,10 @@ charts above.
 
 \begin{itemize}
 \item Unsurprisingly, Reference BLAS are clearly dominated by all other
-  alternatives and exhibits the increase in elapsed time per increase in
+  alternatives and exhibit the highest increase in elapsed time per increase in
   matrix dimension.
 \item Single-threaded Atlas is clearly improving on the Reference
-  BLAS but is dominated by the other multi-threaded libraries and
+  BLAS, but is dominated by the other multi-threaded libraries and
   the GPU-based solution; the QR decompostion is an exception where both Atlas
   variants and the MKL are comparable and just behind Goto.
 \item Multi-threaded Atlas39 is roughly comparable to the MKL (and ahead for
@@ -801,21 +807,15 @@ figure_LogLogSlopes()
 \section[Summary]{Summary}
 
 We present benchmarking results comparing five different BLAS implementations
-for four different matrix computations on two different hardware platforms.
-We find reference BLAS to be dominated in all cases. Single-threaded Atlas
-BLAS improves on the reference BLAS but loses to multi-threaded BLAS.
-
-For multi-threaded BLAS we find the Goto BLAS dominate the Intel MKL, with a
-single exception of the QR decomposition on the xeon-based system which may
-reveal an error. The development version of Atlas, when compiled in
-multi-threaded mode is competitive with both Goto BLAS and the MKL.
-GPU computing, when used in isolation, is found to be compelling only for
-very large matrix sizes.
-%However, a hybrid approach as suggested by Magma
-%\citep{Tomov_et_al:2009,Tomov_et_al:2010} has the potential to dominate the
-%field.  That said, the current implementation was seen to be not yet ready
-%for wider use, at least not for the current library version and the hardware
-%choice at our disposal.
+as well as a GPU-based approach for four different matrix computations on two
+different hardware platforms.  We find reference BLAS to be dominated in all
+cases. Single-threaded Atlas BLAS improves on the reference BLAS but loses to
+multi-threaded BLAS.  For multi-threaded BLAS we find the Goto BLAS dominate
+the Intel MKL, with a single exception of the QR decomposition on the
+xeon-based system which may reveal an error. The development version of
+Atlas, when compiled in multi-threaded mode is competitive with both Goto
+BLAS and the MKL.  GPU computing is found to be compelling only for very
+large matrix sizes.
 
 Our benchmarking framework in the \pkg{gcbd} package can be employed by
 others through the \proglang{R} packaging system which could lead to a wider
@@ -838,8 +838,8 @@ The results in this paper were obtained using \proglang{R}
 
 The following Ubuntu packages were used to provide the different BLAS
 implementations: \pkg{libblas} 1.2-build1, \pkg{liblapack3gf} 3.2.1-2,
-\pkg{libatlas3gf-base} 3.6.0-24ubuntu, \pkg{revolution-mkl} 3.0.0-1ubuntu1,
-(containing MKL 10.2 dated March 2009) and \pkg{gotoblas2} 1.13-1 which was
+\pkg{libatlas3gf-base} 3.6.0-24ubuntu, \pkg{revolution-mkl} 3.0.0-1ubuntu1
+(containing MKL 10.2 dated March 2009),  and \pkg{gotoblas2} 1.13-1 which was
 built using \pkg{gotoblas2-helper} 0.1-12 by \citet{Nakama:2010}. Apart from
 \pkg{gotoblas2-helper} and \pkg{gotoblas2}, all these package are available
 via every Ubuntu mirror.

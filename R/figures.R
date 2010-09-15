@@ -210,7 +210,9 @@ figure_LogLogLattice <- function() {
                          panel=function(x,subscripts,groups,...) {
                              panel.superpose(x,subscripts,groups,type='l',...)
                          },
-                         key=simpleKey(text=c("ref","atlas","atl93","mkl","goto","gpu"),space="right", lines=TRUE, points=FALSE)
+                         key=simpleKey(text=c("ref","atlas","atl93","mkl","goto","gpu"),space="right", lines=TRUE, points=FALSE),
+                         xlab="Matrix dimension (in logs)",
+                         ylab="Elapsed time in seconds (in logs)"
                          )))
     invisible(NULL)
 }

@@ -17,7 +17,7 @@ figure_MatMult_i7 <- function(D) {
             xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication")
     legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=.cols, lty=1, lwd=3)
     matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=3, col=.cols,
-            xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication", log="xy")
+            xlab="Matrix dimension (in logs)", ylab="Time in seconds (in logs)", main="Matrix Multiplication", log="xy")
     legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=.cols, lty=1, lwd=3)
     par(op)
     invisible(NULL)
@@ -32,7 +32,7 @@ figure_MatMult_xeon <- function(D) {
             xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication")
     legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=.cols, lty=1, lwd=3)
     matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=3, col=.cols,
-            xlab="Matrix dimension", ylab="Time in seconds", main="Matrix Multiplication", log="xy")
+            xlab="Matrix dimension (in logs)", ylab="Time in seconds (in logs)", main="Matrix Multiplication", log="xy")
     legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=.cols, lty=1, lwd=3)
     par(op)
     invisible(NULL)
@@ -46,8 +46,8 @@ figure_QR_i7 <- function(D) {
     matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=3, col=.cols,
             xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition")
     legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=.cols, lty=1, lwd=3)
-    matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=3, col=.cols, log="xy",
-            xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition")
+    matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=3, col=.cols,
+            xlab="Matrix dimension (in logs)", ylab="Time in seconds (in logs)", main="QR Decomposition", log="xy")
     legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=.cols, lty=1, lwd=3)
     par(op)
     invisible(NULL)
@@ -62,7 +62,7 @@ figure_QR_xeon <- function(D) {
             xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition")
     legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=.cols, lty=1, lwd=3)
     matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=3, col=.cols,
-            xlab="Matrix dimension", ylab="Time in seconds", main="QR Decomposition", log="xy")
+            xlab="Matrix dimension (in logs)", ylab="Time in seconds (in logs)", main="QR Decomposition", log="xy")
     legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=.cols, lty=1, lwd=3)
     par(op)
     invisible(NULL)
@@ -76,8 +76,8 @@ figure_SVD_i7 <- function(D) {
     matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=3, col=.cols,
             xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition")
     legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=.cols, lty=1, lwd=3)
-    matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=3, col=.cols, log="xy",
-            xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition")
+    matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob","gpu")], type='l', lty=1, lwd=3, col=.cols,
+            xlab="Matrix dimension (in logs)", ylab="Time in seconds (in logs)", main="SVD Decomposition", log="xy")
     legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto","GPU"), bty="n", col=.cols, lty=1, lwd=3)
     par(op)
 
@@ -93,7 +93,7 @@ figure_SVD_xeon <- function(D) {
             xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition")
     legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=.cols, lty=1, lwd=3)
     matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=3, col=.cols,
-            xlab="Matrix dimension", ylab="Time in seconds", main="SVD Decomposition", log="xy")
+            xlab="Matrix dimension (in logs)", ylab="Time in seconds (in logs)", main="SVD Multiplication", log="xy")
     legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=.cols, lty=1, lwd=3)
     par(op)
 
@@ -108,8 +108,8 @@ figure_LU_i7 <- function(D) {
     matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=3, col=.cols,
             xlab="Matrix dimension", ylab="Time in seconds", main="LU Decomposition")
     legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=.cols, lty=1, lwd=3)
-    matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=3, col=.cols, log="xy",
-            xlab="Matrix dimension", ylab="Time in seconds", main="LU Decomposition")
+    matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=3, col=.cols,
+            xlab="Matrix dimension (in logs)", ylab="Time in seconds (in logs)", main="LU Multiplication", log="xy")
     legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=.cols, lty=1, lwd=3)
     par(op)
 
@@ -125,7 +125,7 @@ figure_LU_xeon <- function(D) {
             xlab="Matrix dimension", ylab="Time in seconds", main="LU Decomposition")
     legend("topleft", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=.cols, lty=1, lwd=3)
     matplot(x=D[,"nobs"], y=D[,c("ref","atlas","atl39","mkl","gotob")], type='l', lty=1, lwd=3, col=.cols,
-            xlab="Matrix dimension", ylab="Time in seconds", main="LU Decomposition", log="xy")
+            xlab="Matrix dimension (in logs)", ylab="Time in seconds (in logs)", main="LU Multiplication", log="xy")
     legend("bottomright", legend=c("Ref","Atlas","Atl39","MKL","Goto"), bty="n", col=.cols, lty=1, lwd=3)
     par(op)
 
@@ -184,6 +184,25 @@ figure_LogLogIntercept <- function() {
     invisible(NULL)
 }
 
+figure_LogLogLattice <- function() {
+    D <- rbind(getBenchmarkData("i7_920"),
+               getBenchmarkData("xeon_X5570"))
+
+    require(reshape)
+    DM <- melt(D, id.vars=c("host", "type", "datum", "nobs", "nrun"))
+    DM[,"type"] <- ordered(as.character(DM[,"type"]),
+                           levels=c("matmult", "qr", "svd", "lu"))
+
+    print(xyplot(value ~ nobs| type+host, DM,
+                 group=variable, lwd=2,
+                 scales=list(x=list(log=TRUE),y=list(log=TRUE)),
+                 panel=function(x,subscripts,groups,...) {
+                     panel.superpose(x,subscripts,groups,type='l',...)
+                 },
+                 key=simpleKey(text=c("ref","atlas","atl93","mkl","goto","gpu"),space="right", lines=TRUE, points=FALSE)
+                 ))
+    invisible(NULL)
+}
 
 ## figure_magma_MatMult_QR <- function(D) {
 ##     if (missing(D)) D <- getBenchmarkData("i7_920")

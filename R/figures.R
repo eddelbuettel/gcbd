@@ -192,19 +192,19 @@ figure_LogLogLattice <- function() {
     DM <- melt(D, id.vars=c("host", "type", "datum", "nobs", "nrun"))
     DM[,"type"] <- ordered(as.character(DM[,"type"]),
                            levels=c("matmult", "qr", "svd", "lu"))
-    print(summary(DM))
+
     DM[,"host"] <- ordered(DM[,"host"], levels=c("i7_920", "xeon_X5570"))
     levels(DM[,"host"]) <- c("i7", "xeon")
 
 
-    print(xyplot(value ~ nobs| type+host, DM,
-                 group=variable, lwd=2,
-                 scales=list(x=list(log=TRUE),y=list(log=TRUE)),
-                 panel=function(x,subscripts,groups,...) {
-                     panel.superpose(x,subscripts,groups,type='l',...)
-                 },
-                 key=simpleKey(text=c("ref","atlas","atl93","mkl","goto","gpu"),space="right", lines=TRUE, points=FALSE)
-                 ))
+    with(DM,print(xyplot(value ~ nobs| type+host,
+                         group=variable, lwd=2,
+                         scales=list(x=list(log=TRUE),y=list(log=TRUE)),
+                         panel=function(x,subscripts,groups,...) {
+                             panel.superpose(x,subscripts,groups,type='l',...)
+                         },
+                         key=simpleKey(text=c("ref","atlas","atl93","mkl","goto","gpu"),space="right", lines=TRUE, points=FALSE)
+                         )))
     invisible(NULL)
 }
 

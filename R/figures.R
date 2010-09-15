@@ -142,7 +142,7 @@ figure_LogLogSlopes <- function() {
                            levels=c("matmult", "qr", "svd", "lu"))
 
     sb <- trellis.par.get("strip.background")
-    sb[["col"]][1] <- "lightgray"
+    sb[["col"]][1:2] <- c("gray80","gray90")
     trellis.par.set("strip.background", sb)
 
     ss <- trellis.par.get("superpose.symbol")
@@ -168,7 +168,7 @@ figure_LogLogIntercept <- function() {
                            levels=c("matmult", "qr", "svd", "lu"))
 
     sb <- trellis.par.get("strip.background")
-    sb[["col"]][1] <- "lightgray"
+    sb[["col"]][1:2] <- c("gray80","gray90")
     trellis.par.set("strip.background", sb)
 
     ss <- trellis.par.get("superpose.symbol")
@@ -195,6 +195,10 @@ figure_LogLogLattice <- function() {
 
     DM[,"host"] <- ordered(DM[,"host"], levels=c("i7_920", "xeon_X5570"))
     levels(DM[,"host"]) <- c("i7", "xeon")
+
+    sb <- trellis.par.get("strip.background")
+    sb[["col"]][1:2] <- c("gray80","gray90")
+    trellis.par.set("strip.background", sb)
 
     sl <- trellis.par.get("superpose.line")
     sl[["col"]] <- .cols

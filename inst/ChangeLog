@@ -1,3 +1,10 @@
+2010-09-15  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Version 0.2.3
+
+	* R/figures.R: Added figure_loglogLattice()
+	* man/figures.Rd: Added figure_loglogLattice()
+
 2010-09-14  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Version 0.2.2

@@ -31,8 +31,6 @@ export(
        loglogAnalysis,
        ##
        ## figures.R
-       figure_LogLogIntercept,
-       figure_LogLogSlopes,
        figure_LU_i7,
        figure_LU_xeon,
        figure_MatMult_i7,
@@ -40,6 +38,8 @@ export(
        figure_QR_i7,
        figure_QR_xeon,
        figure_SVD_i7,
-       figure_SVD_xeon
-
+       figure_SVD_xeon,
+       figure_LogLogIntercept,
+       figure_LogLogSlopes,
+       figure_LogLogLattice
        )

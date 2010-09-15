@@ -1,11 +1,11 @@
 Package: gcbd
 Type: Package
 Title: GPU/CPU Benchmarking in Debian-based systems
-Version: 0.2.2
+Version: 0.2.3
 Date: $Date$
 Author: Dirk Eddelbuettel
 Maintainer: Dirk Eddelbuettel <edd@debian.org>
-Description: GPU/CPU Benchmarking for Debian-package based systems
+Description: GPU/CPU Benchmarking on Debian-package based systems
  This package benchmarks performance of a few standard linear algebra
  operations (such as a matrix product and QR, SVD and LU decompositions)
  across a number of different BLAS libraries as well as a GPU implementation.

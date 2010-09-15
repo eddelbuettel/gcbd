@@ -544,7 +544,7 @@ indistinguishable for this test and hardware platform.
 \begin{figure}[H]
   \centering
 <<matmultxeon,fig=TRUE,height=5.25,width=11>>=
-figure_MatMult_i7(i7)
+figure_MatMult_xeon(xeon)
 @
 \caption{Matrix multiplications on xeon}
 \end{figure}
@@ -553,9 +553,10 @@ As above, the reference BLAS underperform significantly, and single-threaded
 Atlas is dominated by all multi-threaded BLAS implementations. On the other
 hand, on this platform the log/log plot offers a better differentiation
 between the multi-threaded BLAS implementations. Goto is clearly ahead of its
-competitors. MKL shows a lower slope and higher times for small sizes hinting
-at some suboptimal configuration.  Atlas39 beats MKL for essentially all
-sizes but cannot catch Goto BLAS' performances.
+competitors, although Atlas93 catches up for the largest matrices.  Atlas39
+also beats MKL for essentially all sizes but cannot catch Goto BLAS'
+performances. MKL shows a lower slope and higher times for small sizes
+hinting at a suboptimal configuration for small sizes.
 
 
 \subsubsection{QR Decomposition: i7 with GPU}
@@ -563,7 +564,7 @@ sizes but cannot catch Goto BLAS' performances.
 \begin{figure}[H]
   \centering
 <<qri7,fig=TRUE,height=5.25,width=11>>=
-figure_QR_i7()
+figure_QR_i7(i7)
 @
 \caption{QR decomposition on i7 with GPU}
 \end{figure}
@@ -580,7 +581,7 @@ small matrices where the computations are still very fast.
 \begin{figure}[H]
   \centering
 <<qrxeon,fig=TRUE,height=5.25,width=11>>=
-figure_QR_xeon()
+figure_QR_xeon(xeon)
 @
 \caption{QR decomposition on xeon}
 \end{figure}
@@ -596,7 +597,7 @@ log/log plot).
 \begin{figure}[H]
   \centering
 <<svdi7,fig=TRUE,height=5.25,width=11>>=
-figure_SVD_i7()
+figure_SVD_i7(i7)
 @
 \caption{SVD on i7 with GPU}
 \end{figure}
@@ -613,7 +614,7 @@ higher intercept.
 \begin{figure}[H]
   \centering
 <<svdxeon,fig=TRUE,height=5.25,width=11>>=
-figure_SVD_xeon()
+figure_SVD_xeon(xeon)
 @
 \caption{SVD on xeon}
 \end{figure}
@@ -628,7 +629,7 @@ MKL. Goto BLAS are once again ahead.
 \begin{figure}[H]
   \centering
 <<lui7,fig=TRUE,height=5.25,width=11>>=
-figure_LU_i7()
+figure_LU_i7(i7)
 @
 \caption{LU decomposition on i7 with GPU}
 \end{figure}
@@ -648,7 +649,7 @@ provide a LU decomposition.
 \begin{figure}[H]
   \centering
 <<luxeon,fig=TRUE,height=5.25,width=11>>=
-figure_LU_xeon()
+figure_LU_xeon(xeon)
 @
 \caption{LU decomposition on xeon}
 \end{figure}

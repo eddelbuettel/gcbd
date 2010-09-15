@@ -196,6 +196,9 @@ figure_LogLogLattice <- function() {
     DM[,"host"] <- ordered(DM[,"host"], levels=c("i7_920", "xeon_X5570"))
     levels(DM[,"host"]) <- c("i7", "xeon")
 
+    sl <- trellis.par.get("superpose.line")
+    sl[["col"]] <- .cols
+    trellis.par.set("superpose.line", sl)
 
     with(DM,print(xyplot(value ~ nobs| type+host,
                          group=variable, lwd=2,

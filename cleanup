@@ -1,3 +1,5 @@
 #!/bin/sh
 
-(cd inst/doc && rm -f gcbd.log gcbd.aux gcbd.bbl gcbd.tex gcbd.blg gcbd.out Rplots.pdf )
+(cd inst/doc && \
+    rm -f gcbd.log gcbd.aux gcbd.bbl gcbd.tex gcbd.blg gcbd.out \
+          Rplots.pdf figures/*pdf )

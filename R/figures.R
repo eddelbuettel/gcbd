@@ -204,16 +204,24 @@ figure_LogLogLattice <- function() {
     sl[["col"]] <- .cols
     trellis.par.set("superpose.line", sl)
 
+    op <- options(scipen=5)
     with(DM,print(xyplot(value ~ nobs| type+host,
                          group=variable, lwd=2,
-                         scales=list(x=list(log=TRUE),y=list(log=TRUE)),
+                         scales=list(x=list(log=TRUE,at=c(100,400,1500,5000),labels=c(100,400,1500,5000)),
+                                     y=list(log=TRUE,at=c(0.0001,0.01,1,100),labels=c(0.0001,0.01,1,100))),
                          panel=function(x,subscripts,groups,...) {
                              panel.superpose(x,subscripts,groups,type='l',...)
                          },
-                         key=simpleKey(text=c("ref","atlas","atl93","mkl","goto","gpu"),space="right", lines=TRUE, points=FALSE),
+                         key=simpleKey(text=c("ref","atlas","atl93","mkl","goto","gpu"),
+                                       space="right", lines=TRUE, points=FALSE),
                          xlab="Matrix dimension (in logs)",
-                         ylab="Elapsed time in seconds (in logs)"
+                         ylab="Elapsed time in seconds (in logs)",
+                         main=paste("Benchmarking BLAS and GPU:",
+                                    "Comparing six implementations on four methods across two architectures"),
+                         sub=paste("Benchmark setup, code, data and analysis are available in the R package",
+                                   "gcbd (Eddelbuettel, 2010) via every CRAN mirror")
                          )))
+    options(op)
     invisible(NULL)
 }
 

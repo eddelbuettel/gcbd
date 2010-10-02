@@ -1,27 +1,27 @@
 
 %% use JSS class but for now with nojss option
 \documentclass[nojss,shortnames,article]{jss}
-\usepackage{float}
+%\usepackage{float}
 \usepackage{booktabs}
 
 \author{Dirk Eddelbuettel\\Debian Project} % \And Second Author\\Plus Affiliation}
-\title{Benchmarking single- and multi-core BLAS implementations and GPUs for use with \proglang{R}}
+\title{Benchmarking Single- and Multi-Core BLAS Implementations and GPUs for use with \proglang{R}}
 
 \Plainauthor{Dirk Eddelbuettel} % , Second Author} %% comma-separated
-\Plaintitle{Benchmarking Single- and Multi-Core BLAS Implementations and GPUs for Use with R}
-\Shorttitle{Benchmarking BLAS and GPUs for Use with R}
+\Plaintitle{Benchmarking Single- and Multi-Core BLAS Implementations and GPUs for use with R}
+\Shorttitle{Benchmarking BLAS and GPUs for use with R}
 
 \Abstract{
   \noindent
   We provide timing results for common linear algebra subroutines across BLAS
-  and GPU-based implementations. Several BLAS (Basic Linear Algebra
-  Subprograms) implementations are compared. The first is the unoptimised
-  reference BLAS which provides a baseline to measure against. Second is the
-  Atlas tuned BLAS, configured for single-threaded mode. Third is the
-  development version of Atlas, configured for multi-threaded mode. Fourth is
-  the optimised and multi-threaded Goto BLAS. Fifth is the multi-threaded
-  BLAS contained in the commercial Intel MKL package. We also measure the
-  performance of a graphics processing unit (GPU) based implementation
+  (Basic Linear Algebra Subprograms) and GPU (Graphics Processing Unit)-based
+  implementations. Several BLAS implementations are compared. The first is
+  the unoptimised reference BLAS which provides a baseline to measure
+  against. Second is the Atlas tuned BLAS, configured for single-threaded
+  mode. Third is the development version of Atlas, configured for
+  multi-threaded mode. Fourth is the optimised and multi-threaded Goto
+  BLAS. Fifth is the multi-threaded BLAS contained in the commercial Intel
+  MKL package. We also measure the performance of a GPU-based implementation
   for \proglang{R} \citep{RCore:R} provided by the package \pkg{gputools}
   \citep{cran:gputools}.
 
@@ -62,7 +62,7 @@
 \Address{
   Dirk Eddelbuettel \\
   Debian Project \\
-  River Forest, IL, USA\\
+  Chicago, IL, USA\\
   %% Telephone: +43/1/31336-5053
   %% Fax: +43/1/31336-734
   E-mail: \email{edd@debian.org}\\
@@ -98,9 +98,10 @@ if ( ! (file.exists("figures") && file.info("figures")$isdir) ) dir.create("figu
 
 \makeatletter
 \if@nojss
-  Detailed comments and suggestions from Roger Bivand, Allan Engelhardt, Bryan
-  Lewis, James MacKinnon, Junji Nakano, Mark Seligman, Brian Smith and Luke
-  Tierney are very gratefully acknowledged. All remaining errors are mine.
+  Detailed comments from Roger Bivand, Rog\'{e}rio Brito, Allan
+  Engelhardt, Bryan Lewis, James MacKinnon, Junji Nakano, Mark Seligman, Brian
+  Smith and Luke Tierney are very gratefully acknowledged. All remaining errors
+  are mine.
 
   \vfill
   This version corresponds to \pkg{gcbd} version \Sexpr{gcbd.version} and was
@@ -189,7 +190,7 @@ into the resulting executable.  This has several key implications. First, the
 executable becomes larger due to the copy of the binary code. Second, it
 makes it marginally faster as the library code is present and no additional
 look-up and subsequent redirection has to be performed. The actual amount of
-this performance penalty is the subject of near-endless debate. We should
+this performance difference is the subject of near-endless debate. We should
 also note that this usually amounts to only a small load-time penalty
 combined with a function pointer redirection---the actual computation effort
 is unchanged as the actual object code is identical. Third, it makes the program
@@ -273,7 +274,7 @@ same name \citep{Tomov_et_al:2009,Tomov_et_al:2010} (where we will capitalize
 the name of the library to distinguish it from the \proglang{R} package). The
 stated goal of the Magma project it to \textsl{develop a dense linear algebra
   library similar to LAPACK but for heterogeneous/hybrid architectures,
-  starting with current "Multicore+GPU" systems}.  The current release of
+  starting with current ``Multicore+GPU'' systems}.  The current release of
 Magma is version 0.2 which is available for Linux systems with NVidia's CUDA
 toolkit. It provides LU, QR, and Cholesky factorizations as well as linear
 solvers based on these along with implementations of several BLAS function
@@ -284,7 +285,7 @@ relative workload between CPU and GPU when using Magma for a
 total computing effort that goes to the GPU increases as a function of the
 matrix size.
 
-\begin{figure}[htb]
+\begin{figure}[t!]
   \centering
   \includegraphics[width=4in]{MagmaTimes.png}
   \caption{Breakdown of CPU and GPU computing percentages for
@@ -356,7 +357,7 @@ provided by the package so we will defer to these and assume that the
 packages are in fact installed.  Helper scripts in our package will then
 verify this availability while the benchmark is executed.
 
-\subsection{Benchmark Implementation}
+\subsection{Benchmark implementation}
 
 The benchmarks described in this paper are produced by the package \pkg{gcbd}
 which is part of the larger \pkg{gcb} project \citep*{rforge:gcb} on the
@@ -500,29 +501,53 @@ xeon <- getBenchmarkData("xeon_X5570")
 D <- subset(i7[,-c(1:2,5)], type=="matmult")
 @
 
-\subsection{BLAS Comparison}
+%\subsection{BLAS comparison}
 
 We present the benchmark results (which are also included in the \pkg{gcbd}
-package in the file \code{sql/gcbd.sqlite}).  We will show one type of
-benchmark per test architecture (currently one of i7 or xeon as detailed in
-section~\ref{subsec:hardware}) with times first shown on a regular scale
-(with the matrix dimension on the horizontal axis and the elapsed time in
-seconds on the vertical axis), and also in a log/log plot with both matrix
-dimension and elapsed time on a logarithmic scale in order to better
-differentiate between alternatives.\footnote{I am particularly grateful to
-  Allan Engelhardt for suggesting to switch from a plot with logged y-axis to
-  a log-log plot.}
-
-\subsubsection{Matrix Multiplication: i7 with GPU}
+package in the file \code{sql/gcbd.sqlite}).  We show the four different
+benchmarks for the two test architectures (currently one of i7 or xeon as
+detailed in section~\ref{subsec:hardware}) for eight different panels in a
+lattice plot \citep{lattice}. Each of these panels displays results for all
+the available BLAS (and GPU) implementations, with the matrix dimension on
+the horizontal axis and the elapsed time in seconds on the vertical axis. In
+Figure~\ref{fig:lattice}, we first display the raw results with the elapsed
+time capped at 30 seconds.  Figure~\ref{fig:logloglattice} then shows the
+same results using logarithmic axes in order to better differentiate between
+alternative implementations.\footnote{I am particularly grateful to Allan
+  Engelhardt for suggesting to switch from a plot with logged y-axis to a
+  log-log plot.}
 
 \setkeys{Gin}{width=0.99\textwidth}
-\begin{figure}[H]
+\begin{figure}[t!]
   \centering
-<<matmulti7,fig=TRUE,height=5.25,width=11>>=
-figure_MatMult_i7(i7)
+<<Lattice,fig=TRUE,height=6.875,width=11>>=
+figure_Lattice(titles=FALSE)
 @
-\caption{Matrix multiplications on i7 with GPU}
+\caption{Benchmark results for BLAS and GPUs across four tests.}
+\label{fig:lattice}
 \end{figure}
+
+\setkeys{Gin}{width=0.99\textwidth}
+\begin{figure}[t!]
+  \centering
+<<LogLogLattice,fig=TRUE,height=6.875,width=11>>=
+figure_LogLogLattice(titles=FALSE)
+@
+\caption{Benchmark results for BLAS and GPUs across four tests using logarithmic axes.}
+\label{fig:logloglattice}
+\end{figure}
+
+
+\subsubsection{Matrix multiplication: i7 with GPU.}
+
+% \setkeys{Gin}{width=0.99\textwidth}
+% \begin{figure}[t!]
+%   \centering
+% <<matmulti7,fig=TRUE,height=5.25,width=11>>=
+% figure_MatMult_i7(i7)
+% @
+% \caption{Matrix multiplications on i7 with GPU.}
+% \end{figure}
 
 It is immediately apparent that the reference BLAS underperform very
 significantly. Similarly, the single-threaded Atlas performance is also
@@ -539,15 +564,15 @@ sizes increases.
 The three multi-threaded BLAS implementations are essentially
 indistinguishable for this test and hardware platform.
 
-\subsubsection{Matrix Multiplication: Xeon}
+\subsubsection{Matrix multiplication: Xeon}
 
-\begin{figure}[H]
-  \centering
-<<matmultxeon,fig=TRUE,height=5.25,width=11>>=
-figure_MatMult_xeon(xeon)
-@
-\caption{Matrix multiplications on xeon}
-\end{figure}
+% \begin{figure}[t!]
+%   \centering
+% <<matmultxeon,fig=TRUE,height=5.25,width=11>>=
+% figure_MatMult_xeon(xeon)
+% @
+% \caption{Matrix multiplications on xeon.}
+% \end{figure}
 
 As above, the reference BLAS underperform significantly, and single-threaded
 Atlas is dominated by all multi-threaded BLAS implementations. On the other
@@ -558,16 +583,17 @@ also beats MKL for essentially all sizes but cannot catch Goto BLAS'
 performances. MKL shows a lower slope and higher times for small sizes
 hinting at a suboptimal configuration for small sizes.
 
+%\clearpage
 
-\subsubsection{QR Decomposition: i7 with GPU}
+\subsubsection{QR decomposition: i7 with GPU}
 
-\begin{figure}[H]
-  \centering
-<<qri7,fig=TRUE,height=5.25,width=11>>=
-figure_QR_i7(i7)
-@
-\caption{QR decomposition on i7 with GPU}
-\end{figure}
+% \begin{figure}[t!]
+%   \centering
+% <<qri7,fig=TRUE,height=5.25,width=11>>=
+% figure_QR_i7(i7)
+% @
+% \caption{QR decomposition on i7 with GPU.}
+% \end{figure}
 
 As before, reference BLAS are behind all other implementations. The
 single-threaded Atlas is on-par with the multi-threaded Atlas39---and the GPU
@@ -576,15 +602,15 @@ log/log plot once again illustrates the higher `startup cost' of the GPU
 solution due to the communications cost being high (in relatively terms) for
 small matrices where the computations are still very fast.
 
-\subsubsection{QR Decomposition: Xeon}
+\subsubsection{QR decomposition: Xeon}
 
-\begin{figure}[H]
-  \centering
-<<qrxeon,fig=TRUE,height=5.25,width=11>>=
-figure_QR_xeon(xeon)
-@
-\caption{QR decomposition on xeon}
-\end{figure}
+% \begin{figure}[b!]
+%   \centering
+% <<qrxeon,fig=TRUE,height=5.25,width=11>>=
+% figure_QR_xeon(xeon)
+% @
+% \caption{QR decomposition on xeon.}
+% \end{figure}
 
 Results fall basically into three groups. The Reference BLAS are behind
 everybody. A second group of both Atlas variants and MKL forms the middle
@@ -592,15 +618,17 @@ with MKL having a slight edge over the Atlas libraries. However, Goto is
 ahead of everybody (yet shows a somewhat surprising non-linearity in the
 log/log plot).
 
-\subsubsection{SVD Decomposition: i7 with GPU}
+%\clearpage
 
-\begin{figure}[H]
-  \centering
-<<svdi7,fig=TRUE,height=5.25,width=11>>=
-figure_SVD_i7(i7)
-@
-\caption{SVD on i7 with GPU}
-\end{figure}
+\subsubsection{SVD decomposition: i7 with GPU}
+
+% \begin{figure}[t!]
+%   \centering
+% <<svdi7,fig=TRUE,height=5.25,width=11>>=
+% figure_SVD_i7(i7)
+% @
+% \caption{SVD on i7 with GPU.}
+% \end{figure}
 
 For the SVD, we have the familiar ordering of Reference BLAS behind
 single-threaded Atlas which is behind multi-threaded Atlas.  MKL, Goto and
@@ -611,28 +639,28 @@ higher intercept.
 
 \subsubsection{SVD: Xeon}
 
-\begin{figure}[H]
-  \centering
-<<svdxeon,fig=TRUE,height=5.25,width=11>>=
-figure_SVD_xeon(xeon)
-@
-\caption{SVD on xeon}
-\end{figure}
+% \begin{figure}[t!]
+%   \centering
+% <<svdxeon,fig=TRUE,height=5.25,width=11>>=
+% figure_SVD_xeon(xeon)
+% @
+% \caption{SVD on xeon.}
+% \end{figure}
 
 On the Xeon, results are similar to the i7 with the main difference that the
 multi-threaded Atlas39 is closer to its competitors, in particular the
 MKL. Goto BLAS are once again ahead.
 
 
-\subsubsection{LU Decomposition: i7 with GPU}
+\subsubsection{LU decomposition: i7 with GPU}
 
-\begin{figure}[H]
-  \centering
-<<lui7,fig=TRUE,height=5.25,width=11>>=
-figure_LU_i7(i7)
-@
-\caption{LU decomposition on i7 with GPU}
-\end{figure}
+% \begin{figure}[t!]
+%   \centering
+% <<lui7,fig=TRUE,height=5.25,width=11>>=
+% figure_LU_i7(i7)
+% @
+% \caption{LU decomposition on i7 with GPU.}
+% \end{figure}
 
 LU decomposition results, using the function from the \pkg{Matrix} package
 \citep{cran:matrix}, are similar to earlier results. Reference BLAS are by
@@ -644,15 +672,15 @@ available as the current version of the \pkg{gputools} package does not
 provide a LU decomposition.
 
 
-\subsubsection{LU Decomposition: Xeon}
+\subsubsection{LU decomposition: Xeon}
 
-\begin{figure}[H]
-  \centering
-<<luxeon,fig=TRUE,height=5.25,width=11>>=
-figure_LU_xeon(xeon)
-@
-\caption{LU decomposition on xeon}
-\end{figure}
+% \begin{figure}[t!]
+%   \centering
+% <<luxeon,fig=TRUE,height=5.25,width=11>>=
+% figure_LU_xeon(xeon)
+% @
+% \caption{LU decomposition on xeon.}
+% \end{figure}
 
 On the xeon chip we see once again a clearer separation between the three accelerated BLAS
 implementations on the one hand and the single-threaded Atlas and the
@@ -662,19 +690,19 @@ exhibits some irregularity for small-to-medium sized matrices.
 
 \subsubsection{Comparison}
 
-The charts shown above suggest a further analysis: a regression of the
-logarithm of the elapsed times on the logarithm of the matrix dimension.
-These are shown in Table~\ref{tab:logloganalysis} below. For these results, a
-higher slope coefficient implies a higher increase in elapsed time per
-increase in matrix dimension, and moreover in a non-linear fashion as we have
-taken logarithms.
+The charts shown above, and in particular Figure~\ref{fig:logloglattice},
+suggest a further analysis: a regression of the logarithm of the elapsed
+times on the logarithm of the matrix dimension.  These are shown in
+Table~\ref{tab:logloganalysis} below. For these results, a higher slope
+coefficient implies a higher increase in elapsed time per increase in matrix
+dimension, and moreover in a non-linear fashion as we have taken logarithms.
 
 <<table,echo=FALSE,print=FALSE>>=
 C <- loglogAnalysis()[["coefs"]]
 C[,-c(1,2)] <- format(round(C[,-c(1,2)], digits=2))
 @
 
-\begin{table}[H]
+\begin{table}[b!]
   \begin{center}
     \begin{tabular*}{0.975\textwidth}{@{\extracolsep{\fill}} l r rr rr rr rr rr}
     %\begin{tabular}{lrrrrrr}
@@ -703,7 +731,7 @@ C[,-c(1,2)] <- format(round(C[,-c(1,2)], digits=2))
       \bottomrule
     \end{tabular*}
   \end{center}
-  \caption{Comparison of intercepts $\alpha$ and slopes $\beta$ in log/log analysis of BLAS performance}
+  \caption{Comparison of intercepts $\alpha$ and slopes $\beta$ in log/log analysis of BLAS performance.}
   \label{tab:logloganalysis}
 \end{table}
 
@@ -733,12 +761,12 @@ charts above.
   package).
 \end{itemize}
 
-\begin{figure}[H]
+\begin{figure}[t!]
   \centering
-<<loglogslopes,fig=TRUE,height=5.25,width=11>>=
+<<loglogslopes,fig=TRUE,height=4.25,width=11>>=
 figure_LogLogSlopes()
 @
-\caption{Comparison of slopes in log/log analysis of BLAS performance}
+\caption{Comparison of slopes in log/log analysis of BLAS performance.}
 \label{fig:slopeloglog}
 \end{figure}
 
@@ -752,7 +780,7 @@ figure_LogLogSlopes()
 
 % \subsubsection{Performance of magma and BLAS relative to BLAS}
 
-% \begin{figure}[H]
+% \begin{figure}[t!]
 %   \centering
 % < <magmammqr,fig=TRUE,height=5.25,width=11> >=
 % figure_magma_MatMult_QR()
@@ -779,7 +807,7 @@ figure_LogLogSlopes()
 % team; hopefully a future library version will allow these tests to be
 % performed.
 
-% \begin{figure}[H]
+% \begin{figure}[t!]
 %   \centering
 % < <magmasvdlu,fig=TRUE,height=5.25,width=11> >=
 % figure_magma_SVD_LU()

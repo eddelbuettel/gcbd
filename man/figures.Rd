@@ -11,6 +11,7 @@
 \alias{figure_LogLogIntercept}
 \alias{figure_LogLogSlopes}
 \alias{figure_LogLogLattice}
+\alias{figure_Lattice}
 \title{Figures from the corresponding vignette}
 \description{
   These functions generate the figures the in the corresponding vignette.
@@ -27,10 +28,12 @@
   figure_SVD_xeon(D)
   figure_LogLogIntercept()
   figure_LogLogSlopes()
-  figure_LogLogLattice()
+  figure_LogLogLattice(titles=TRUE)
+  figure_Lattice(titles=TRUE)
 }
 \arguments{
   \item{D}{Benchmark results to be visualised}
+  \item{titles}{Boolean flag whether to set `main' and `sub' titles for the figure}
 }
 \details{
   \code{loglogAnalysis} retrieves past benchmark results from the

@@ -184,7 +184,7 @@ figure_LogLogIntercept <- function() {
     invisible(NULL)
 }
 
-figure_LogLogLattice <- function() {
+figure_LogLogLattice <- function(titles=TRUE) {
     D <- rbind(getBenchmarkData("i7_920"),
                getBenchmarkData("xeon_X5570"))
 
@@ -214,18 +214,20 @@ figure_LogLogLattice <- function() {
                          },
                          key=simpleKey(text=c("ref","atlas","atl93","mkl","goto","gpu"),
                                        space="right", lines=TRUE, points=FALSE),
-                         xlab="Matrix dimension (in logs)",
-                         ylab="Elapsed time in seconds (in logs)",
-                         main=paste("Benchmarking BLAS and GPU:",
+                         xlab="Matrix dimension (on logarithmic axis)",
+                         ylab="Elapsed time in seconds (on logarithmic axis)",
+                         main=ifelse(titles,paste("Benchmarking BLAS and GPU:",
                                     "Comparing six implementations on four methods across two architectures"),
-                         sub=paste("Benchmark setup, code, data and analysis are available in the R package",
-                                   "gcbd (Eddelbuettel, 2010) via every CRAN mirror")
+                              ""),
+                         sub=ifelse(titles,paste("Benchmark setup, code, data and analysis are available in the R package",
+                                   "gcbd (Eddelbuettel, 2010) via every CRAN mirror"),
+                              "")
                          )))
     options(op)
     invisible(NULL)
 }
 
-figure_Lattice <- function() {
+figure_Lattice <- function(titles=TRUE) {
     D <- rbind(getBenchmarkData("i7_920"),
                getBenchmarkData("xeon_X5570"))
 
@@ -257,17 +259,17 @@ figure_Lattice <- function() {
                          key=simpleKey(text=c("ref","atlas","atl93","mkl","goto","gpu"),
                                        space="right", lines=TRUE, points=FALSE),
                          xlab="Matrix dimension",
-                         ylab="Elapsed time in seconds",
-                         main=paste("Benchmarking BLAS and GPU:",
-                                    "Comparing six implementations on four methods across two architectures"),
-                         sub=paste("Benchmark setup, code, data and analysis are available in the R package",
-                                   "gcbd (Eddelbuettel, 2010) via every CRAN mirror")
+                         ylab="Elapsed time in seconds (capped at 30 seconds)",
+                         main=ifelse(titles,paste("Benchmarking BLAS and GPU: Comparing six",
+                                     "implementations on four methods across two architectures"), ""),
+                         sub=ifelse(titles,paste("Benchmark setup, code, data and analysis are available",
+                                   "in the R package gcbd (Eddelbuettel, 2010) via every CRAN mirror"), "")
                          )))
     options(op)
     invisible(NULL)
 }
 
-figure_LatticeByArch <- function() {
+figure_LatticeByArch <- function(titles=TRUE) {
     D <- rbind(getBenchmarkData("i7_920"),
                getBenchmarkData("xeon_X5570"))
 
@@ -297,10 +299,12 @@ figure_LatticeByArch <- function() {
                          xlab="Matrix dimension",
                          ylab="Elapsed time in seconds",
                          auto.key=TRUE,
-                         main=paste("Benchmarking BLAS and GPU:",
+                         main=ifelse(titles,paste("Benchmarking BLAS and GPU:",
                                     "Comparing six implementations on four methods across two architectures"),
-                         sub=paste("Benchmark setup, code, data and analysis are available in the R package",
-                                   "gcbd (Eddelbuettel, 2010) via every CRAN mirror")
+                                    ""),
+                         sub=ifelse(titles,paste("Benchmark setup, code, data and analysis are available in the R package",
+                                   "gcbd (Eddelbuettel, 2010) via every CRAN mirror"),
+                                    "")
                          )))
     options(op)
     invisible(NULL)

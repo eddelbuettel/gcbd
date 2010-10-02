@@ -41,5 +41,6 @@ export(
        figure_SVD_xeon,
        figure_LogLogIntercept,
        figure_LogLogSlopes,
-       figure_LogLogLattice
+       figure_LogLogLattice,
+       figure_Lattice
        )

@@ -1,3 +1,13 @@
+2010-10-02  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Version 0.2.4
+
+	* R/figures.R: Added figure_Lattice()
+	* man/figures.Rd: Added figure_Lattice()
+
+	* inst/doc/gcbd.Rnw: Applied a number of small fixes and changed
+	results discussion to use the lattice figures
+
 2010-09-15  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Version 0.2.3

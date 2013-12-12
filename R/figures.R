@@ -188,7 +188,6 @@ figure_LogLogLattice <- function(titles=TRUE) {
     D <- rbind(getBenchmarkData("i7_920"),
                getBenchmarkData("xeon_X5570"))
 
-    require(reshape)
     DM <- melt(D, id.vars=c("host", "type", "datum", "nobs", "nrun"))
     DM[,"type"] <- ordered(as.character(DM[,"type"]),
                            levels=c("matmult", "qr", "svd", "lu"))
@@ -231,7 +230,6 @@ figure_Lattice <- function(titles=TRUE) {
     D <- rbind(getBenchmarkData("i7_920"),
                getBenchmarkData("xeon_X5570"))
 
-    require(reshape)
     DM <- melt(D, id.vars=c("host", "type", "datum", "nobs", "nrun"))
     DM[,"type"] <- ordered(as.character(DM[,"type"]),
                            levels=c("matmult", "qr", "svd", "lu"))
@@ -273,7 +271,6 @@ figure_LatticeByArch <- function(titles=TRUE) {
     D <- rbind(getBenchmarkData("i7_920"),
                getBenchmarkData("xeon_X5570"))
 
-    require(reshape)
     DM <- melt(D, id.vars=c("host", "type", "datum", "nobs", "nrun"))
     DM[,"type"] <- ordered(as.character(DM[,"type"]),
                            levels=c("matmult", "qr", "svd", "lu"))

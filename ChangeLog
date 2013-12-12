@@ -1,3 +1,16 @@
+2013-12-11  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Version 0.2.5
+
+	* vignettes/*: Moved files from inst/doc/
+
+	* ChangeLog/*: Moved from inst/
+
+	* .travis.yml: Added for Github / Travis support
+	* .gitignore: Added for git support
+
+	* R/figures.R: Remove extraneous require(reshape)
+
 2010-10-02  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Version 0.2.4

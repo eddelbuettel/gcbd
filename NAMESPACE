@@ -1,4 +1,8 @@
 
+import("RSQLite", "DBI", "plyr", "reshape", "lattice")
+importFrom("graphics", "legend", "matplot", "par")
+importFrom("stats", "coef", "lm", "rnorm")
+
 export(
        ## benchmark.R
        getMatrix,

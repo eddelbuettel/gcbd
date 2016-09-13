@@ -6,7 +6,7 @@
 \alias{qrBenchmark}
 \alias{qrBenchmarkgputools}
 \alias{svdBenchmark}
-\alias{svdBenchmarkgputools}
+%\alias{svdBenchmarkgputools}
 \alias{luBenchmark}
 \alias{luBenchmarkgputools}
 \title{Benchmarking functions for GPU/CPU Benchmarking}
@@ -20,7 +20,7 @@
   qrBenchmark(N, n, trim=0.1)
   qrBenchmarkgputools(N, n, trim=0.1)
   svdBenchmark(N, n, trim=0.1)
-  svdBenchmarkgputools(N, n, trim=0.1)
+%  svdBenchmarkgputools(N, n, trim=0.1)
   luBenchmark(N, n, trim=0.1)
   luBenchmarkgputools(N, n, trim=0.1)
 }
@@ -44,8 +44,8 @@
 
   \code{svdBenchmark} times the cost of a Singular Value Decomposition
   (SVD) of a matrix of the given size, repeated as specified and returns
-  the trimmed mean of the elapsed times. \code{svdBenchmarkgputools}
-  does the same using the \strong{gputools} package.
+  the trimmed mean of the elapsed times. %\code{svdBenchmarkgputools}
+  %does the same using the \strong{gputools} package.
 
   \code{luBenchmark} times the cost of a LU Decomposition of a matrix of
   the given size, repeated as specified and returns the trimmed mean of

@@ -8,6 +8,8 @@
 	longer in current gputools
 	* man/benchmark.Rd: Commented-out here too
 
+	* .travis.yml: Switch to using run.sh for Travis CI
+
 2013-12-11  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Version 0.2.5

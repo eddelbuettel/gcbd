@@ -1,8 +1,12 @@
 2016-09-12  Dirk Eddelbuettel  <edd@debian.org>
 
-	* DESCRIPTION (Imports): Added 'plyr, reshape, lattice'
-	(Depends): Added 'DBI'
-	* NAMESPACE: Added import() and importFrom() statements
+	* DESCRIPTION (Imports): Added 'Matrix, DBI, RSQLite, plyr, reshape, lattice'
+
+	* NAMESPACE: Added importFrom() statements for each package
+
+	* R/benchmark.R (svdBenchmarkgputools): Commented-out as SVD no
+	longer in current gputools
+	* man/benchmark.Rd: Commented-out here too
 
 2013-12-11  Dirk Eddelbuettel  <edd@debian.org>
 

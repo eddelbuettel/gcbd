@@ -1,7 +1,13 @@
 
-import("RSQLite", "DBI", "plyr", "reshape", "lattice")
 importFrom("graphics", "legend", "matplot", "par")
 importFrom("stats", "coef", "lm", "rnorm")
+importFrom("DBI", "dbDriver")
+importFrom("RSQLite", "dbBuildTableDefinition", "dbConnect", "dbDisconnect",
+           "dbGetQuery", "dbWriteTable")
+importFrom("lattice", "trellis.par.get", "trellis.par.set", "xyplot", "simpleKey", "dotplot")
+importFrom("plyr", "ddply")
+importFrom("reshape", "melt", "melt.data.frame")
+importFrom("Matrix", "lu")
 
 export(
        ## benchmark.R
@@ -11,7 +17,7 @@ export(
        qrBenchmark,
        qrBenchmarkgputools,
        svdBenchmark,
-       svdBenchmarkgputools,
+       #svdBenchmarkgputools,
        luBenchmark,
        luBenchmarkgputools,
        ##

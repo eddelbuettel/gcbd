@@ -1,6 +1,11 @@
 2016-09-12  Dirk Eddelbuettel  <edd@debian.org>
 
-	* DESCRIPTION (Imports): Added 'Matrix, DBI, RSQLite, plyr, reshape, lattice'
+	* DESCRIPTION (Version, Date): Rolled version and date
+
+	* DESCRIPTION (Title, Description): Edited to current standards
+
+	* DESCRIPTION (Imports): Added 'Matrix, DBI, RSQLite, plyr, reshape,
+	lattice'
 
 	* NAMESPACE: Added importFrom() statements for each package
 

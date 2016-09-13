@@ -1,3 +1,15 @@
+2016-09-12  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (Imports): Added 'Matrix, DBI, RSQLite, plyr, reshape, lattice'
+
+	* NAMESPACE: Added importFrom() statements for each package
+
+	* R/benchmark.R (svdBenchmarkgputools): Commented-out as SVD no
+	longer in current gputools
+	* man/benchmark.Rd: Commented-out here too
+
+	* .travis.yml: Switch to using run.sh for Travis CI
+
 2013-12-11  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Version 0.2.5

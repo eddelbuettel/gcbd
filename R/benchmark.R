@@ -33,7 +33,7 @@ matmultBenchmark <- function(N, n, trim=0.1) {
 
 matmultBenchmarkgputools <- function(N, n, trim=0.1) {
     a <- getMatrix(N)
-    traw <- replicate(n, system.time(gpuMatMult(a,a))[3])
+    traw <- replicate(n, system.time(gputools::gpuMatMult(a,a))[3])
     tmean <- mean(traw,trim=trim)
 }
 
@@ -51,7 +51,7 @@ qrBenchmark <- function(N, n, trim=0.1) {
 
 qrBenchmarkgputools <- function(N, n, trim=0.1) {
     a <- getMatrix(N)
-    traw <- replicate(n, system.time(gpuQr(a))[3])
+    traw <- replicate(n, system.time(gputools::gpuQr(a))[3])
     tmean <- mean(traw,trim=trim)
 }
 
@@ -74,11 +74,11 @@ svdBenchmark <- function(N, n, trim=0.1) {
 ##     tmean <- mean(traw,trim=trim)
 ## }
 
-svdBenchmarkgputools <- function(N, n, trim=0.1) {
-    a <- getMatrix(N)
-    traw <- replicate(n, system.time(gpuSvd(a))[3])
-    tmean <- mean(traw,trim=trim)
-}
+#svdBenchmarkgputools <- function(N, n, trim=0.1) {
+#    a <- getMatrix(N)
+#    traw <- replicate(n, system.time(gputools::gpuSvd(a))[3])
+#    tmean <- mean(traw,trim=trim)
+#}
 
 luBenchmark <- function(N, n, trim=0.1) {
     a <- getMatrix(N)

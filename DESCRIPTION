@@ -1,15 +1,14 @@
 Package: gcbd
 Type: Package
 Title: GPU/CPU Benchmarking in Debian-based systems
-Version: 0.2.5
-Date: 2013-12-11
+Version: 0.2.5.1
+Date: 2016-09-12
 Author: Dirk Eddelbuettel
 Maintainer: Dirk Eddelbuettel <edd@debian.org>
 Description: GPU/CPU Benchmarking on Debian-package based systems
  This package benchmarks performance of a few standard linear algebra
  operations (such as a matrix product and QR, SVD and LU decompositions)
  across a number of different BLAS libraries as well as a GPU implementation.
- .
  To do so, it takes advantage of the ability to 'plug and play' different
  BLAS implementations easily on a Debian and/or Ubuntu system.  The current
  version supports
@@ -20,13 +19,13 @@ Description: GPU/CPU Benchmarking on Debian-package based systems
   - Intel MKL which are a commercial accelerated and multithreaded version.
  As for GPU computing, we use the CRAN package
   - gputools
- .
  For Goto Blas, the gotoblas2-helper script from the ISM in Tokyo can be
  used. For Intel MKL we use the Revolution R packages from Ubuntu 9.10.
 License: GPL (>= 2)
 LazyLoad: yes
-Depends: R (>= 2.11.1), RSQLite, plyr, reshape, lattice
-Suggests: gputools, Matrix
+Depends: R (>= 2.11.1)
+Imports: Matrix, DBI, RSQLite, plyr, reshape, lattice
+Suggests: gputools
 SystemRequirements: Debian or Ubuntu system with access to Goto Blas, Intel
  MKL, Atlas development build as well as a Nvidia GPU with CUDA support
 OS_type: unix

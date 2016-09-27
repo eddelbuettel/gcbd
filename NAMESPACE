@@ -1,9 +1,8 @@
 
 importFrom("graphics", "legend", "matplot", "par")
 importFrom("stats", "coef", "lm", "rnorm")
-importFrom("DBI", "dbDriver")
-importFrom("RSQLite", "dbBuildTableDefinition", "dbConnect", "dbDisconnect",
-           "dbGetQuery", "dbWriteTable")
+importFrom("DBI", "dbDriver", "dbConnect", "dbDisconnect", "dbGetQuery", "dbWriteTable")
+importFrom("RSQLite", "dbBuildTableDefinition")
 importFrom("lattice", "trellis.par.get", "trellis.par.set", "xyplot", "simpleKey", "dotplot")
 importFrom("plyr", "ddply")
 importFrom("reshape", "melt", "melt.data.frame")

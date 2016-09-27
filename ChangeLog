@@ -1,3 +1,7 @@
+2016-09-27  Dirk Eddelbuettel  <edd@debian.org>
+
+	* NAMESPACE: Change some importFrom() from RSQLite to DBI
+
 2016-09-12  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION (Version, Date): Rolled version and date

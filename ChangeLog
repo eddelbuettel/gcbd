@@ -1,5 +1,7 @@
 2016-09-27  Dirk Eddelbuettel  <edd@debian.org>
 
+	* DESCRIPTION (Version, Date): Release 0.2.6
+
 	* NAMESPACE: Change some importFrom() from RSQLite to DBI
 
 2016-09-12  Dirk Eddelbuettel  <edd@debian.org>
@@ -14,7 +16,7 @@
 	* NAMESPACE: Added importFrom() statements for each package
 
 	* R/benchmark.R (svdBenchmarkgputools): Commented-out as SVD no
-	longer in current gputools
+	longer provided in current gputools
 	* man/benchmark.Rd: Commented-out here too
 
 	* .travis.yml: Switch to using run.sh for Travis CI

@@ -1,6 +1,8 @@
 # gcbd
 
 [![Build Status](https://travis-ci.org/eddelbuettel/gcbd.png)](https://travis-ci.org/eddelbuettel/gcbd)
+[![CI](https://github.com/eddelbuettel/gcbd/workflows/ci/badge.svg)](https://github.com/eddelbuettel/gcbd/actions?query=workflow%3Aci)
+
 
 ## GPU/CPU Benchmarking on Debian-package based systems
 

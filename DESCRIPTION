@@ -26,6 +26,8 @@ LazyLoad: yes
 Depends: R (>= 2.11.1)
 Imports: Matrix, DBI, RSQLite, plyr, reshape, lattice
 Suggests: gputools
+URL: https://github.com/eddelbuettel/gcbd
+BugReports: https://github.com/eddelbuettel/gcbd/issues
 SystemRequirements: Debian or Ubuntu system with access to Goto Blas, Intel
  MKL, Atlas development build as well as a Nvidia GPU with CUDA support
 OS_type: unix

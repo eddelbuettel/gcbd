@@ -1,3 +1,7 @@
+2022-02-20  Dirk Eddelbuettel  <edd@debian.org>
+
+	* NAMESPACE: Add panel.superpose to lattice imports
+
 2021-11-08  Dirk Eddelbuettel  <edd@debian.org>
 
  	* README.md: Remove Travis badge

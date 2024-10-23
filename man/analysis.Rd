@@ -1,6 +1,5 @@
 \name{analysis}
 \alias{analysis}
-\alias{loglogAnalysis}
 \title{Analysis functions for GPU/CPU Benchmarking}
 \description{
   Analysis functions for GPU/CPU Benchmarking

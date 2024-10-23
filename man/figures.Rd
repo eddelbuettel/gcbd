@@ -12,6 +12,7 @@
 \alias{figure_LogLogSlopes}
 \alias{figure_LogLogLattice}
 \alias{figure_Lattice}
+\alias{loglogAnalysis}
 \title{Figures from the corresponding vignette}
 \description{
   These functions generate the figures the in the corresponding vignette.

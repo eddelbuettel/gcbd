@@ -857,12 +857,9 @@ heuristics more robust.
 
 The results in this paper were obtained using \proglang{R}
 \Sexpr{paste(R.Version()[6:7], collapse = ".")} with the packages
-\pkg{gputools} \Sexpr{gsub("-", "--", packageDescription("gputools")[["Version"]])},
-\pkg{RSQLite} \Sexpr{gsub("-", "--", packageDescription("RSQLite")[["Version"]])},
-\pkg{DBI} \Sexpr{gsub("-", "--", packageDescription("DBI")[["Version"]])} and
-\pkg{getopt} \Sexpr{gsub("-", "--", packageDescription("getopt")[["Version"]])}.
-\proglang{R} itself and all packages used are available from CRAN at
-\url{http://CRAN.R-project.org/}.
+\pkg{RSQLite}, \pkg{DBI},\pkg{getopt} and the now-archived package
+\pkg{gputools}. \proglang{R} itself and all packages used are available from
+CRAN at \url{http://CRAN.R-project.org/}. 
 
 The following Ubuntu packages were used to provide the different BLAS
 implementations: \pkg{libblas} 1.2-build1, \pkg{liblapack3gf} 3.2.1-2,

@@ -1,9 +1,12 @@
-2024-10-23  Dirk Eddelbuettel  <edd@debian.org>
+2024-10-29  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (Version, Date): Release 0.2.7
+
+	* DESCRIPTION (Authors@R): Added
 
 	* vignettes/gcbd.Rnw: No longer force call for package versions
 
-	* man/figures.Rd: Move \alias{loglogAnalysis} here
-	* man/analysis.Rd: Remove \alias{loglogAnalysis}
+	* man/figures.Rd: Remove extra \code{loglogAnalysis} to address a nag
 
 2024-02-15  Dirk Eddelbuettel  <edd@debian.org>
 
